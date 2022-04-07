@@ -1,12 +1,13 @@
-swagger setting,
-crlf setting remove delete 'cr'
-hot reloading,
-[nest swagger](https://docs.nestjs.com/openapi/introduction)
-git ignore .env
+swagger setting,<br/>
+crlf setting remove delete 'cr'<br/>
+hot reloading,<br/>
+[nest swagger](https://docs.nestjs.com/openapi/introduction)<br/>
+git ignore .env<br/>
+import * as library from "library" => import library from "library"로 가능하게 됨.<br/>
 
-to use typeorm put
-keepConnectionAlive: true
-inside of TypeORM configuration
+to use typeorm put<br/>
+keepConnectionAlive: true<br/>
+inside of TypeORM configuration<br/>
 
 when using fastify-swagger or helmet will cause CSP problem.
 
