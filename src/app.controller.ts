@@ -9,4 +9,8 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+  @Get('working')
+  getWORKING(): string {
+    return this.appService.getWORKING();
+  }
 }
