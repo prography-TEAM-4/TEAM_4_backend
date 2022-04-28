@@ -1,4 +1,4 @@
-name: learn-github-actions
+name: ci
 on:
   push:
     branches:
