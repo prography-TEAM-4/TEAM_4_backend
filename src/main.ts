@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { SocketIoAdapter } from './multi/adapter/socket-io.adapter';
 
 declare const module: any;
 const port = process.env.PORT || 80;
@@ -15,6 +16,9 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  // 현석: socket.io 설정
+  app.useWebSocketAdapter(new SocketIoAdapter(app));
 
   await app.listen(port);
 
