@@ -22,6 +22,16 @@ import {
 @ApiTags('Users')
 @ApiBearerAuth('jwt')
 @ApiHeader({ name: 'Authorization name undefined', description: 'JWT Bearer' })
+@ApiResponse({
+  status: 401,
+  description: 'unathorized',
+  schema: {
+    example: {
+      result: false,
+      message: 'unauthorized',
+    },
+  },
+})
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -35,16 +45,6 @@ export class UserController {
     schema: {
       example: {
         result: true,
-      },
-    },
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'unathorized',
-    schema: {
-      example: {
-        result: false,
-        message: 'unauthorized',
       },
     },
   })
