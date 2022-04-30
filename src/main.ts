@@ -2,7 +2,16 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { SocketIoAdapter } from './multi/adapter/socket-io.adapter';
+import { createDatabase } from 'typeorm-extension';
 
+// (async () => {
+//   await createDatabase({
+//     ifNotExist: true,
+//     charset: 'utf8mb4_general_ci',
+//     characterSet: 'utf8mb4',
+//   });
+//   process.exit(0);
+// })();
 declare const module: any;
 const port = process.env.PORT || 80;
 async function bootstrap() {
