@@ -88,6 +88,7 @@ export class UserController {
   findAll() {
     return this.userService.findAll();
   }
+  @ApiOperation({ summary: 'return db_username secret' })
   @Get('test')
   findTest() {
     return this.userService.test();

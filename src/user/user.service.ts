@@ -38,6 +38,6 @@ export class UserService {
   }
 
   test() {
-    return this.config.get('secret') || 'no secret is here';
+    return this.config.get('DB_USERNAME') || 'no secret is here';
   }
 }
