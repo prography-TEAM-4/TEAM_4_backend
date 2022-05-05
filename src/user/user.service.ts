@@ -1,15 +1,28 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Users } from '../entities/Users';
+import { Repository } from 'typeorm';
 import { CreateBookDto } from './dto/create-user.dto';
 import { UpdateBookDto } from './dto/update-user.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
+  constructor(
+    @InjectRepository(Users) private usersRepository: Repository<Users>,
+    private readonly config: ConfigService,
+  ) {}
   create(createUserDto: CreateBookDto) {
+    const user = new Users();
+    user.Email = 'asdf';
+    user.SnsId = 'zxcv';
+    this.usersRepository.save(user);
     return 'This action adds a new user';
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll() {
+    const userslist = await this.usersRepository.find();
+    return userslist;
   }
 
   findOne(id: number) {
@@ -22,5 +35,9 @@ export class UserService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  test() {
+    return this.config.get('secret') || 'no secret is here';
   }
 }

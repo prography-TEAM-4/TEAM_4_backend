@@ -88,4 +88,8 @@ export class UserController {
   findAll() {
     return this.userService.findAll();
   }
+  @Get('test')
+  findTest() {
+    return this.userService.test();
+  }
 }
