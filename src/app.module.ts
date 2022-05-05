@@ -15,7 +15,7 @@ import * as ormconfig from '../ormconfig';
     MultiModule,
     ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
-    // TypeOrmModule.forRoot(ormconfig),
+    TypeOrmModule.forRoot(ormconfig),
     OauthModule,
   ],
   controllers: [AppController, OauthController],

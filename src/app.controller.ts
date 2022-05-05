@@ -1,5 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCookieAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AppService } from './app.service';
 
 @ApiTags('Default Health Checking')
@@ -12,5 +17,11 @@ export class AppController {
   @Get()
   getHello(): string {
     return this.appService.getHello();
+  }
+
+  @ApiCookieAuth('asdfasdf')
+  @Get('test')
+  test(): string {
+    return this.appService.asdf();
   }
 }
