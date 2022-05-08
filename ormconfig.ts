@@ -1,6 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import dotenv from 'dotenv';
-import { Rooms } from 'src/entities/Rooms';
+import { Room } from 'src/entities/Rooms';
 import { Users } from './src/entities/Users';
 dotenv.config();
 const config: TypeOrmModuleOptions = {
@@ -10,10 +10,10 @@ const config: TypeOrmModuleOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  entities: [Users, Rooms],
+  entities: [Users, Room],
   autoLoadEntities: true,
   charset: 'utf8mb4',
-  synchronize: false, //첫 시작은 true, 나머지는 계속 false
+  synchronize: true, //첫 시작은 true, 나머지는 계속 false
   logging: true, //쿼리문 로그
   keepConnectionAlive: true, //핫 리로딩 시 연결 차단 막기
 };

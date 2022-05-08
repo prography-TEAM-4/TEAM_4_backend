@@ -1,17 +1,17 @@
 import { Entity, EntityRepository, Repository } from "typeorm";
 import { RoomStatus } from "./room-status.enum";
-import { Rooms } from "src/entities/Rooms";
+import { Room } from "src/entities/Rooms";
 import { CreateRoomDto } from "./dto/room-create.dto";
 
-@EntityRepository(Rooms)
-export class RoomRepository extends Repository<Rooms> {
-    async createPrivateRoom(createRoomDto: CreateRoomDto): Promise<Rooms> {
+@EntityRepository(Room)
+export class RoomRepository extends Repository<Room> {
+    async createPrivateRoom(createRoomDto: CreateRoomDto): Promise<Room> {
         const { roomid, host } = createRoomDto;
 
         const room = this.create({
             roomid,
             host,
-            headcount: 1,
+            headCount: 1,
             status: RoomStatus.FRIENDS,
         });
 
@@ -19,13 +19,13 @@ export class RoomRepository extends Repository<Rooms> {
         return room;
     }
 
-    async createPublicRoom(createRoomDto: CreateRoomDto): Promise<Rooms> {
+    async createPublicRoom(createRoomDto: CreateRoomDto): Promise<Room> {
         const { roomid, host } = createRoomDto;
 
         const room = this.create({
             roomid,
             host,
-            headcount: 1,
+            headCount: 1,
             status: RoomStatus.RANDOM,
         });
 
