@@ -1,6 +1,6 @@
 import { Entity, EntityRepository, Repository } from "typeorm";
 import { RoomStatus } from "./room-status.enum";
-import { Room } from "src/entities/Rooms";
+import { Room } from "src/entities/Room";
 import { CreateRoomDto } from "./dto/room-create.dto";
 
 @EntityRepository(Room)

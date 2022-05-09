@@ -1,6 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import dotenv from 'dotenv';
-import { Room } from 'src/entities/Rooms';
+import { Room } from 'src/entities/Room';
 import { Users } from './src/entities/Users';
 dotenv.config();
 const config: TypeOrmModuleOptions = {

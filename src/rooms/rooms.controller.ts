@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Post, Redirect, Request } from '@nestjs/common';
-import { Room } from 'src/entities/Rooms';
+import { ApiTags } from '@nestjs/swagger';
+import { Room } from 'src/entities/Room';
 import { CreateRoomDto } from './dto/room-create.dto';
 import { RoomsService } from './rooms.service';
 
