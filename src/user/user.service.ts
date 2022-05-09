@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from '../entities/Users';
+import { User } from '../entities/User';
 import { Repository } from 'typeorm';
 import { CreateBookDto } from './dto/create-user.dto';
 import { UpdateBookDto } from './dto/update-user.dto';
@@ -9,12 +9,12 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(Users) private usersRepository: Repository<Users>,
+    @InjectRepository(User) private usersRepository: Repository<User>,
     private readonly config: ConfigService,
   ) {}
   create(createUserDto: CreateBookDto) {
-    const user = new Users();
-    user.Email = 'asdf';
+    const user = new User();
+    //user.Email = 'asdf';
     user.SnsId = 'zxcv';
     this.usersRepository.save(user);
     return 'This action adds a new user';

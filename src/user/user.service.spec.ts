@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Users } from '../entities/Users';
+import { User } from '../entities/User';
 import { UserService } from './user.service';
 
 class MockUserRepository {}
@@ -13,7 +13,7 @@ describe('UserService', () => {
       providers: [
         UserService,
         {
-          provide: getRepositoryToken(Users),
+          provide: getRepositoryToken(User),
           useClass: MockUserRepository,
         },
         ConfigService,
