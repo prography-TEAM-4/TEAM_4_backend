@@ -1,6 +1,8 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import dotenv from 'dotenv';
-import { Users } from './src/entities/Users';
+import { BookList } from 'src/entities/BookList';
+import { Room } from 'src/entities/Room';
+import { User } from './src/entities/User';
 dotenv.config();
 const config: TypeOrmModuleOptions = {
   type: 'mysql',
@@ -9,12 +11,13 @@ const config: TypeOrmModuleOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  entities: [Users],
+  entities: [User, BookList, Room],
   autoLoadEntities: true,
   charset: 'utf8mb4',
-  synchronize: true, //첫 시작은 true, 나머지는 계속 false
+  synchronize: false, //첫 시작은 true, 나머지는 계속 false
   logging: true, //쿼리문 로그
   keepConnectionAlive: true, //핫 리로딩 시 연결 차단 막기
+  migrationsRun: false,
 };
 
 export = config;

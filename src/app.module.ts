@@ -18,7 +18,7 @@ import * as ormconfig from '../ormconfig';
     TypeOrmModule.forRoot(ormconfig),
     OauthModule,
   ],
-  controllers: [AppController, OauthController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
