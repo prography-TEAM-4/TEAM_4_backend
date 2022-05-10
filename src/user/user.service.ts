@@ -12,11 +12,11 @@ export class UserService {
     @InjectRepository(User) private usersRepository: Repository<User>,
     private readonly config: ConfigService,
   ) {}
-  create(createUserDto: CreateBookDto) {
-    const user = new User();
-    //user.Email = 'asdf';
-    user.SnsId = 'zxcv';
-    this.usersRepository.save(user);
+  create(createUserDto: CreateBookDto, token: any) {
+    // const user = new User();
+    console.log(token);
+    // user.SnsId = 'zxcv';
+    // this.usersRepository.save(user);
     return 'This action adds a new user';
   }
 
