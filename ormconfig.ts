@@ -2,7 +2,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import dotenv from 'dotenv';
 import { BookList } from 'src/entities/BookList';
 import { Room } from 'src/entities/Room';
-import { RoomChat } from 'src/entities/Roomchat';
+import { RoomChat } from 'src/entities/RoomChat';
 import { User } from './src/entities/User';
 dotenv.config();
 const config: TypeOrmModuleOptions = {

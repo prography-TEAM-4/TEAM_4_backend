@@ -6,7 +6,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { RoomChat } from './Roomchat';
+import { RoomChat } from './RoomChat';
 import { User } from './User';
 
 Index('id', ['id'], {});

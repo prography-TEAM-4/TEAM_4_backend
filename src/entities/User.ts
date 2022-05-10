@@ -12,7 +12,7 @@ import {
 } from 'typeorm';
 import { BookList } from './BookList';
 import { Room } from './Room';
-import { RoomChat } from './Roomchat';
+import { RoomChat } from './RoomChat';
 
 @Index('id', ['id'], {})
 @Index('SnsId', ['SnsId'], {})
