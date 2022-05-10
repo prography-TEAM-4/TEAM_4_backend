@@ -15,7 +15,7 @@ import { Room } from 'src/entities/Room';
 import { CreateRoomDto } from './dto/room-create.dto';
 import { RoomsService } from './rooms.service';
 
-@Controller('rooms')
+@Controller('mode/matching')
 export class RoomsController {
   constructor(private roomService: RoomsService) {}
 

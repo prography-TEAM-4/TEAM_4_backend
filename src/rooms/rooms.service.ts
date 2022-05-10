@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from 'src/entities/Room';
+import { MultiGateway } from 'src/multi/multi.gateway';
 import { CreateRoomDto } from './dto/room-create.dto';
 import { RoomRepository } from './room.repository';
 
@@ -9,6 +10,7 @@ export class RoomsService {
   constructor(
     @InjectRepository(RoomRepository)
     private roomRepository: RoomRepository,
+    private readonly multiGateway: MultiGateway,
   ) {}
 
   createRoom(createRoomDto: CreateRoomDto): Promise<Room> {
