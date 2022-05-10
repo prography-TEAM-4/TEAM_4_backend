@@ -14,7 +14,7 @@ export class OauthController {
   })
   @Post('/google')
   async googleCheck(@Body() accessToken: AccessToken) {
-    await this.oauthService.googleAccess(accessToken);
+    return await this.oauthService.googleAccess(accessToken);
   }
 
   @ApiOperation({

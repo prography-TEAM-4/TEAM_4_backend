@@ -8,6 +8,7 @@ import {
   Delete,
   Header,
   Headers,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateBookDto, ResponseBookDto } from './dto/create-user.dto';
@@ -19,9 +20,13 @@ import {
   ApiResponseProperty,
   ApiTags,
 } from '@nestjs/swagger';
+import { LoggedInGuard } from 'src/oauth/logged-in.guard';
 @ApiTags('Users')
 @ApiBearerAuth('jwt')
-@ApiHeader({ name: 'Authorization name undefined', description: 'JWT Bearer' })
+@ApiHeader({
+  name: 'Authorization',
+  description: 'eyJhGcioJ와 같은 accessToken',
+})
 @ApiResponse({
   status: 401,
   description: 'unathorized',
@@ -32,6 +37,7 @@ import {
     },
   },
 })
+@UseGuards(LoggedInGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -53,7 +59,7 @@ export class UserController {
     @Body() createUserDto: CreateBookDto,
     @Headers('Authorization') token: any,
   ) {
-    return this.userService.create(createUserDto);
+    return this.userService.create(createUserDto, token);
   }
 
   @ApiOperation({
