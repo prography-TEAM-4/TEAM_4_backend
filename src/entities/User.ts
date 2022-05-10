@@ -5,11 +5,14 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { BookList } from './BookList';
+import { Room } from './Room';
+import { RoomChat } from './Roomchat';
 
 @Index('id', ['id'], {})
 @Index('SnsId', ['SnsId'], {})
@@ -41,4 +44,11 @@ export class User extends BaseEntity {
 
   @OneToMany((type) => BookList, (booklist) => booklist.user)
   booklists: BookList[];
+
+  @ManyToOne((type) => Room, (room) => room.id)
+  room: Room;
+
+  @OneToMany((type) => RoomChat, (roomchat) => roomchat.user)
+  roomchat: RoomChat[];
+
 }

@@ -3,8 +3,11 @@ import {
   Column,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { RoomChat } from './Roomchat';
+import { User } from './User';
 
 Index('id', ['id'], {});
 Index('roomid', ['roomid'], {});
@@ -24,4 +27,10 @@ export class Room extends BaseEntity {
 
   @Column()
   status: string;
+
+  @OneToMany((type) => User, (user) => user.room)
+  User: User[];
+
+  @OneToMany((type) => RoomChat, (roomchat) => roomchat.room)
+  roomchat: RoomChat[];
 }
