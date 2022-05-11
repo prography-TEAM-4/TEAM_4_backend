@@ -1,24 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { User } from '../entities/User';
-import { OauthService } from './oauth.service';
+import { Room } from 'src/entities/Room';
+import { FriendsService } from './friends.service';
 
-class MockUserRepository {}
-describe('OauthService', () => {
-  let service: OauthService;
+class MockRoomRepository {}
+describe('FriendsService', () => {
+  let service: FriendsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        OauthService,
+        FriendsService,
         {
-          provide: getRepositoryToken(User),
-          useClass: MockUserRepository,
+          provide: getRepositoryToken(Room),
+          useClass: MockRoomRepository,
         },
       ],
     }).compile();
 
-    service = module.get<OauthService>(OauthService);
+    service = module.get<FriendsService>(FriendsService);
   });
 
   it('should be defined', () => {

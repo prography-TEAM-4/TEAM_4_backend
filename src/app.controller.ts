@@ -19,9 +19,8 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @ApiCookieAuth('asdfasdf')
   @Get('test')
   test(): string {
-    return this.appService.asdf();
+    return this.appService.secretTest();
   }
 }

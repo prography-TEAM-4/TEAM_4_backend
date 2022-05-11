@@ -1,4 +1,8 @@
 import { Module } from '@nestjs/common';
+import { MultiGateway } from './multi.gateway';
 
-@Module({})
+@Module({
+    providers: [MultiGateway],
+    exports: [MultiGateway],
+})
 export class MultiModule {}
