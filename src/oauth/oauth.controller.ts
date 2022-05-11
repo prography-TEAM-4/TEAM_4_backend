@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Post, Redirect } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Post, Redirect } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AccessToken } from './dto/oauth.dto';
 import { OauthService } from './oauth.service';
 
@@ -8,6 +8,28 @@ import { OauthService } from './oauth.service';
 @Controller('oauth')
 export class OauthController {
   constructor(private readonly oauthService: OauthService) {}
+
+  @ApiResponse({
+    description: 'unauthorized error',
+    status: 401,
+    schema: {
+      example: { success: false, code: 401, data: 'unauthorized error' },
+    },
+  })
+  @ApiResponse({
+    description: 'unknown error',
+    status: 404,
+    schema: {
+      example: { success: false, code: 404, data: 'unknown error' },
+    },
+  })
+  @ApiResponse({
+    description: '로그인 성공, 우리 access token 발급 7일간 유효',
+    status: 200,
+    schema: {
+      example: { accessToken: 'asdfasdfasdf' },
+    },
+  })
   @ApiOperation({
     summary:
       '구글의 access token을 받아서 서버용 토큰을 발급(리프레쉬 토큰은 보안상 추천하지 않음) ',
@@ -26,4 +48,30 @@ export class OauthController {
   )
   @Get('/google')
   googleLogin() {}
+
+  @ApiOperation({ summary: '로그인이 되어있는지 확인하는 기능' })
+  @ApiResponse({
+    description: 'success',
+    status: 200,
+    schema: {
+      example: {
+        result: true,
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '로그인 실패',
+    schema: {
+      example: {
+        success: false,
+        code: 401,
+        data: 'unauthorized error',
+      },
+    },
+  })
+  @Get('check')
+  async check(@Headers('Authorization') token: any) {
+    return this.oauthService.check(token);
+  }
 }

@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { SocketIoAdapter } from './multi/adapter/socket-io.adapter';
 import { createDatabase } from 'typeorm-extension';
+import { HttpExceptionFilter } from './http-exception.filter';
+import { ValidationPipe } from '@nestjs/common';
 
 // (async () => {
 //   await createDatabase({
@@ -16,7 +18,8 @@ declare const module: any;
 const port = process.env.PORT || 80;
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   const config = new DocumentBuilder()
     .setTitle('NestJS TEMPLATE')
     .setDescription('BASIC NESTJS TEMPLATE')
