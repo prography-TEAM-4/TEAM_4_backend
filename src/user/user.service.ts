@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateBookDto } from './dto/create-user.dto';
 import { UpdateBookDto } from './dto/update-user.dto';
 import { ConfigService } from '@nestjs/config';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class UserService {
@@ -13,10 +14,9 @@ export class UserService {
     private readonly config: ConfigService,
   ) {}
   create(createUserDto: CreateBookDto, token: any) {
-    // const user = new User();
     console.log(token);
-    // user.SnsId = 'zxcv';
-    // this.usersRepository.save(user);
+    const userData = jwt.verify(token, this.config.get('secret'));
+    console.log(userData);
     return 'This action adds a new user';
   }
 

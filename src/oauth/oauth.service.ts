@@ -18,7 +18,6 @@ export class OauthService {
       const { data }: { data: GoogleData } = await axios.get(
         `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${accessToken}`,
       );
-      console.log(data);
       const alreadyExist = await this.userRepository
         .createQueryBuilder('User')
         .where('User.provider = :provider and SnsId = :SnsId', {
@@ -36,6 +35,7 @@ export class OauthService {
         { id: data.id, provider: 'google' },
         this.config.get('secret'),
       );
+      console.log(ourAccessToken);
       return { accessToken: ourAccessToken };
     } catch (error) {
       console.log(error.response.data.error.message);

@@ -37,7 +37,6 @@ import { LoggedInGuard } from 'src/oauth/logged-in.guard';
     },
   },
 })
-@UseGuards(LoggedInGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -94,6 +93,7 @@ export class UserController {
   findAll() {
     return this.userService.findAll();
   }
+
   @ApiOperation({ summary: 'return db_username secret' })
   @Get('test')
   findTest() {
