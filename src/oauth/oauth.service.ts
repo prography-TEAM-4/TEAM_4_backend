@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import { User } from 'src/entities/User';
@@ -14,10 +19,16 @@ export class OauthService {
   ) {}
 
   async googleAccess({ accessToken }: AccessToken) {
+    let data: GoogleData | undefined;
     try {
-      const { data }: { data: GoogleData } = await axios.get(
+      const tempData = await axios.get(
         `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${accessToken}`,
       );
+      data = tempData.data;
+    } catch (error) {
+      throw new UnauthorizedException('unauthorized error');
+    }
+    try {
       const alreadyExist = await this.userRepository
         .createQueryBuilder('User')
         .where('User.provider = :provider and SnsId = :SnsId', {
@@ -32,13 +43,29 @@ export class OauthService {
         await newUser.save();
       }
       const ourAccessToken = jwt.sign(
-        { id: data.id, provider: 'google' },
+        {
+          id: data.id,
+          provider: 'google',
+          iss: 'pomo',
+          sub: 'pomo jwt',
+          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
+        },
         this.config.get('secret'),
       );
-      console.log(ourAccessToken);
       return { accessToken: ourAccessToken };
     } catch (error) {
-      console.log(error.response.data.error.message);
+      throw new NotFoundException('unknown error');
     }
+  }
+
+  async check(token: any) {
+    try {
+      await jwt.verify(token, this.config.get('secret'));
+    } catch (error) {
+      throw new UnauthorizedException(`unauthorized error`);
+    }
+    return {
+      result: true,
+    };
   }
 }

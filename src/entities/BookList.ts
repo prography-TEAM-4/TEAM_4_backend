@@ -37,6 +37,15 @@ export class BookList extends BaseEntity {
   @Column()
   tail: number;
 
+  @Column()
+  pattern: number;
+
+  @Column()
+  walkingLeg1: number;
+
+  @Column()
+  walkingLeg2: number;
+
   @ManyToOne((type) => User, (user) => user.booklists)
   user: User;
 }
