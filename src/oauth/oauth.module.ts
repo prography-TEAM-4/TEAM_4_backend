@@ -8,5 +8,6 @@ import { OauthService } from './oauth.service';
   controllers: [OauthController],
   providers: [OauthService],
   imports: [TypeOrmModule.forFeature([User])],
+  exports: [OauthModule],
 })
 export class OauthModule {}
