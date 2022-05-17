@@ -5,6 +5,7 @@ import { SocketIoAdapter } from './multi/adapter/socket-io.adapter';
 import { createDatabase } from 'typeorm-extension';
 import { HttpExceptionFilter } from './http-exception.filter';
 import { ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 // (async () => {
 //   await createDatabase({
@@ -17,7 +18,7 @@ import { ValidationPipe } from '@nestjs/common';
 declare const module: any;
 const port = process.env.PORT || 80;
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   const config = new DocumentBuilder()
@@ -30,7 +31,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   // 현석: socket.io 설정
-  app.useWebSocketAdapter(new SocketIoAdapter(app));
+  //app.useWebSocketAdapter(new SocketIoAdapter(app));
 
   await app.listen(port);
 
