@@ -20,6 +20,7 @@ const port = process.env.PORT || 80;
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.enableCors();
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   const config = new DocumentBuilder()
     .setTitle('NestJS TEMPLATE')
