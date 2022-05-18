@@ -6,6 +6,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Member } from './Member';
 import { RoomChat } from './RoomChat';
 import { User } from './User';
 
@@ -30,6 +31,9 @@ export class Room extends BaseEntity {
 
   @OneToMany((type) => User, (user) => user.room)
   User: User[];
+
+  @OneToMany((type) => Member, (member) => member.room)
+  member: Member[];
 
   @OneToMany((type) => RoomChat, (roomchat) => roomchat.room)
   roomchat: RoomChat[];
