@@ -1,9 +1,12 @@
-import { IsNotEmpty } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreateFriendsRoomDto {
     @IsNotEmpty()
-    roomid: string;
-
-    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({
+        example: "example@domain.com",
+        description: "e-mail",
+    })
     host: string;
 }

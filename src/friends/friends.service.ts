@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from 'src/entities/Room';
 import { RoomChat } from 'src/entities/RoomChat';
@@ -9,6 +9,8 @@ import { Repository } from 'typeorm';
 import { CreateFriendsRoomDto } from './dto/friends-create.dto';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
+import { Member } from 'src/entities/Member';
+import { v4 } from 'uuid';
 
 @Injectable()
 export class FriendsService {
@@ -19,6 +21,8 @@ export class FriendsService {
         private friendsRoomChatRepository: Repository<RoomChat>,
         @InjectRepository(User)
         private userRepository: Repository<User>,
+        @InjectRepository(Member)
+        private memberRepository: Repository<Member>,
         private readonly multiGatway: MultiGateway,
         private readonly config: ConfigService,
     ){}
@@ -41,49 +45,64 @@ export class FriendsService {
 
         // 로그인 한 경우 가능
         if(existUser){
+            const roomid: string = v4();
+
             const room = new Room;
-            room.roomid = createFriendsRoomDto.roomid;
+            room.roomid = roomid;
             room.host = createFriendsRoomDto.host;
-            room.headCount = 1;
+            room.headCount = 0;
             room.status = "FRIENDS";
-            return await this.friendsRoomRepository.save(room);
+            await this.friendsRoomRepository.save(room);
+            return room;
         }
         else{
-            console.log('unauthorized error');
+            console.log('unlogined error');
         }
     }
     // 방 가져오기
-    async getFriendsRoom(roomid: string, token: any) {
+    async getFriendsRoom(roomid: string, token: any, nick: string) {
         let userData: jwtParsed;
+        var flag: boolean = true;
+
         try{
             userData = jwt.verify(token, this.config.get('secret'));
         }catch(error){
-            throw new UnauthorizedException(`unauthorized error`);
-        }
+            flag = false;
+        }finally {
+            const room = await this.friendsRoomRepository.findOne({
+                where: { roomid: roomid }
+            });
 
-        const existUser = await this.userRepository.findOne({
-            where: { 
-                SnsId: userData.id,
-                Provider: userData.provider,
+            // 없는 방이거나 6명 이상인 경우
+            if(!room || room.headCount >= 6){
+                throw new HttpException('Not Exist Room', HttpStatus.NOT_FOUND);;
             }
-        });
+            
+            if(flag){
+                const existUser = await this.userRepository.findOne({
+                    where: { 
+                        SnsId: userData.id,
+                        Provider: userData.provider,
+                    }
+                });
+                if(existUser){
+                    existUser.room = room;
+                    this.userRepository.save(existUser);
 
-        const room = await this.friendsRoomRepository.findOne(roomid);
+                    room.headCount += 1;
+                    this.friendsRoomRepository.save(room);
+                    return room;
+                }
+            }
+            // 로그인을 하지 않은 유저
+            const member = new Member;
+            member.Nick = nick;
+            member.room = room;
+            this.memberRepository.save(member);
 
-        // 없는 방이거나 6명 이상인 경우
-        if(!room || room.headCount >= 6){
-            return;
-        }
-
-        if(existUser){
-            existUser.room = room;
             room.headCount += 1;
             this.friendsRoomRepository.save(room);
-            return room;
-        }
-        // 로그인을 하지 않은 경우는 어떻게...?
-        else{
-            return room;
+            return { member, room };
         }
     }
 
@@ -102,6 +121,7 @@ export class FriendsService {
                 roomid,
             })
             .innerJoinAndSelect('roomChats.user', 'user')
+            .innerJoinAndSelect('roomChats.member', 'member')
             .orderBy('roomChats.createdAt', 'DESC')
             .take(perPage)
             .skip(perPage * (page - 1))
@@ -110,39 +130,70 @@ export class FriendsService {
     
     // 채팅 생성하기
     async creatFriendsRoomChats(
+        token: any,
         roomid: string,
         content: string,
-        userid: number,
+        memberid: number,
     ) {
-        const room = await this.friendsRoomRepository.findOne({
-            where: { roomid: roomid }
-        });
-        const user = await this.userRepository.findOne(userid);
+        let userData: jwtParsed;
+        var flag: boolean = true;
+        try{
+            userData = jwt.verify(token, this.config.get('secret'));
+        }catch(error){
+            flag = false;
+        } finally{
+            const room = await this.friendsRoomRepository.findOne({
+                where: { roomid: roomid }
+            });
+            if(!room){
+                console.log('없는 방');
+                return new HttpException('not exist room', HttpStatus.NOT_FOUND);
+            }
 
-        if(!room){
-            console.log('없는 방');
+            const chats = new RoomChat;
+            chats.content = content;
+            chats.room = room;
+
+            if(flag){
+                // 로그인 유저
+                const existUser = await this.userRepository.findOne({
+                    where: { 
+                        SnsId: userData.id,
+                        Provider: userData.provider,
+                    }
+                });
+                if(existUser){
+                    chats.user = existUser;
+                }
+                else{
+                    flag = false;
+                }
+            }
+
+            if(!flag){
+                const existMember = await this.memberRepository.findOne({
+                    where: { id: memberid },
+                });
+
+                if(!existMember) { 
+                    return new HttpException('no member', HttpStatus.NOT_FOUND); 
+                }
+                chats.member = existMember;
+            }
+            
+            const saveChat = await this.friendsRoomChatRepository.save(chats);
+            const chatWithUser = await this.friendsRoomChatRepository.findOne({
+                where: { id: saveChat.id },
+                relations: ['user', 'member', 'room']
+            });
+
+            console.log(chatWithUser.room.roomid);
+
+            // socket.io로 해당 방 사용자에게 전송
+            this.multiGatway.server
+                .to(`/room-${chatWithUser.room.status}-${chatWithUser.room.roomid}`)
+                .emit('message', chatWithUser);
+            console.log(`/room-${chatWithUser.room.status}-${chatWithUser.room.roomid}`)
         }
-
-        if(!user){
-            console.log('없는 사람');
-        }
-        const chats = new RoomChat;
-        chats.content = content;
-        chats.user = user;
-        chats.room = room;
-
-        const saveChat = await this.friendsRoomChatRepository.save(chats);
-        const chatWithUser = await this.friendsRoomChatRepository.findOne({
-            where: { id: saveChat.id },
-            relations: ['user', 'room']
-        });
-
-        console.log(chatWithUser.room.roomid);
-
-        // socket.io로 해당 방 사용자에게 전송
-        this.multiGatway.server
-            .to(`/room-${chatWithUser.room.status}-${chatWithUser.room.roomid}`)
-            .emit('message', chatWithUser);
-        console.log(`/room-${chatWithUser.room.status}-${chatWithUser.room.roomid}`)
     }
 }

@@ -27,7 +27,7 @@ export class MultiGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
   // 이벤트 발생 시
   @SubscribeMessage('enter')
-  handleLogin(
+  handleEnter (
     @MessageBody() data: { id: number; roomid: string },
     @ConnectedSocket() client: Socket,
   ) {
@@ -37,7 +37,6 @@ export class MultiGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     newNamespace.emit('ConnectedUsers', Object.values(ConnectedUsers[client.nsp.name]));
     console.log('join', client.nsp.name, data.roomid);
     client.join(`${client.nsp.name}-${data.roomid}`);
-
   }
 
   handleConnection(client: Socket) {

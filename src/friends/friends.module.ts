@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Member } from 'src/entities/Member';
 import { Room } from 'src/entities/Room';
 import { RoomChat } from 'src/entities/RoomChat';
 import { User } from 'src/entities/User';
@@ -11,9 +12,10 @@ import { FriendsService } from './friends.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Room, RoomChat, User, ConfigService]),
+    TypeOrmModule.forFeature([Room, RoomChat, User, Member]),
     MultiModule,
-    OauthModule
+    OauthModule,
+    ConfigService,
   ],
   controllers: [FriendsController],
   providers: [FriendsService]
