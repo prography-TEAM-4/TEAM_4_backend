@@ -107,6 +107,15 @@ export class FriendsController {
         description: '얼마나 건너뛸 것인지',
         example: 1
     })
+    @ApiResponse({
+        description: '친구방 채팅 가져오기 성공',
+        status: 200,
+        schema: {
+            example: { 
+                roomChats: '생성 역순으로 채팅 여러 개를 가져옴',
+            },
+        },
+    })
     @ApiOperation({ summary: '친구방 채팅 가져오기' })
     @Get(':roomid/chats')
     async getFriendsRoomChats(

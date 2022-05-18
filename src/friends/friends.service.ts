@@ -120,8 +120,8 @@ export class FriendsService {
             .innerJoin('roomChats.room', 'room', 'room.roomid = :roomid', {
                 roomid,
             })
-            .innerJoinAndSelect('roomChats.user', 'user')
-            .innerJoinAndSelect('roomChats.member', 'member')
+            .leftJoinAndSelect('roomChats.user', 'user')
+            .leftJoinAndSelect('roomChats.member', 'member')
             .orderBy('roomChats.createdAt', 'DESC')
             .take(perPage)
             .skip(perPage * (page - 1))
