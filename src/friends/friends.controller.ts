@@ -46,10 +46,9 @@ export class FriendsController {
     @ApiOperation({ summary: '친구방 만들기' })
     @Post('')
     async createFriendsRoom(
-        @Body() body: CreateFriendsRoomDto,
         @Headers('Authorization') token: any,
     ){
-        return await this.friendsService.createFriendsRoom(body, token);
+        return await this.friendsService.createFriendsRoom(token);
     }
 
     @ApiParam({
