@@ -12,7 +12,14 @@ import { Server, Socket } from 'socket.io';
 import { ConnectedUsers } from './connectedUsers';
 
 
-@WebSocketGateway({ namespace: /\/room-.+/ })
+//@WebSocketGateway({ namespace: /\/room-.+/ })
+@WebSocketGateway({
+  namespace: /\/room-.+/,
+  cors: {
+    origin: '*',
+    methods: ["GET", "POST"],
+  },
+})
 export class MultiGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() public server: Server;
 
