@@ -27,6 +27,12 @@ export class FriendsController {
         name: 'Authorization',
         description: 'eyJhGcioJ와 같은 accessToken',
     })
+    @ApiBody({
+        description: '비로그인 유저는 닉네임, 로그인 유저는 null',
+        schema: {
+            example: { nick: 'example' },
+        }
+    })
     @ApiResponse({
         description: 'unauthorized error',
         status: 401,
@@ -47,8 +53,9 @@ export class FriendsController {
     @Post('')
     async createFriendsRoom(
         @Headers('Authorization') token: any,
+        @Body('nick') nick,
     ){
-        return await this.friendsService.createFriendsRoom(token);
+        return await this.friendsService.createFriendsRoom(nick, token);
     }
 
     @ApiParam({
