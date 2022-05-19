@@ -43,13 +43,9 @@ export class UserService {
     newBook.arm = createUserDto.arm;
     newBook.body = createUserDto.body;
     newBook.ear = createUserDto.ear;
-    newBook.eye = createUserDto.eye;
-    newBook.horn = createUserDto.horn;
+    newBook.face = createUserDto.face;
     newBook.leg = createUserDto.leg;
     newBook.tail = createUserDto.tail;
-    newBook.pattern = createUserDto.pattern;
-    newBook.walkingLeg1 = createUserDto.walkingLeg1;
-    newBook.walkingLeg2 = createUserDto.walkingLeg2;
     newBook.user = existUser;
     try {
       newBook.save();
@@ -78,7 +74,6 @@ export class UserService {
       const result = await this.booklistRepository.findAndCount({
         where: { user: user },
       });
-      console.log(result);
       return result;
     } catch (error) {
       throw new NotFoundException('unknown error');
@@ -118,19 +113,15 @@ export class UserService {
 
   async randomNick() {
     const rand = Math.floor(Math.random() * 100);
-    const ImgCode = Math.floor(Math.random() * 6);
+    const ImgCode = Math.floor(Math.random() * 6) + 1;
     const code = {
-      eye: ImgCode,
-      mouth: ImgCode,
+      face: ImgCode,
       arm: ImgCode,
       body: ImgCode,
-      horn: ImgCode,
       ear: ImgCode,
       leg: ImgCode,
       tail: ImgCode,
-      pattern: ImgCode,
-      walkingLeg1: ImgCode,
-      walkingLeg2: ImgCode,
+      all: ImgCode,
     };
     return {
       Nick: '테스팅용 랜덤' + rand,
