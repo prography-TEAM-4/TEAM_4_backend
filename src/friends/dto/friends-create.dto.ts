@@ -3,7 +3,6 @@ import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreateFriendsRoomDto {
     @IsNotEmpty()
-    @IsString()
     @ApiProperty({
         example: "example@domain.com",
         description: "e-mail",

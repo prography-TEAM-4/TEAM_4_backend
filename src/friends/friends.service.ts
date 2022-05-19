@@ -28,7 +28,7 @@ export class FriendsService {
     ){}
 
     // 방 만들기
-    async createFriendsRoom(createFriendsRoomDto: CreateFriendsRoomDto, token: any){
+    async createFriendsRoom(token: any){
         let userData: jwtParsed;
         try{
             userData = jwt.verify(token, this.config.get('secret'));
@@ -49,7 +49,7 @@ export class FriendsService {
 
             const room = new Room;
             room.roomid = roomid;
-            room.host = createFriendsRoomDto.host;
+            room.host = existUser.SnsId;
             room.headCount = 0;
             room.status = "FRIENDS";
             await this.friendsRoomRepository.save(room);
