@@ -117,9 +117,24 @@ export class FriendsService {
             member.room = room;
             this.memberRepository.save(member);
 
+            const memberList: Array<Member> = await this.memberRepository
+                .createQueryBuilder('members')
+                .innerJoin('members.room', 'room', 'room.roomid = :roomid', {
+                    roomid,
+                })
+                .getMany();
+
             room.headCount += 1;
             this.friendsRoomRepository.save(room);
-            return { member, room };
+
+            const userList: Array<Member> = await this.userRepository
+                .createQueryBuilder('users')
+                .innerJoin('users.room', 'room', 'room.roomid = :roomid', {
+                    roomid,
+                })
+                .getMany();
+
+            return { userList, memberList, room };
         }
     }
 

@@ -85,7 +85,8 @@ export class FriendsController {
         schema: {
             example: { 
                 room: "new room = { roomid, host, headCount(++), status(FRIENDS) }", 
-                member: "new member = { nick, roomid } (비로그인 유저일 경우)", 
+                memberList: "방에 입장 member들을 Array로 반환",
+                userList: "방에 입장 user들을 Array로 반환", 
             },
         },
     })
