@@ -85,15 +85,80 @@ export class UserService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
+  async findUser(token: any) {
+    let userData: jwtParsed;
+    try {
+      userData = await jwt.verify(token, this.config.get('secret'));
+    } catch (error) {
+      throw new UnauthorizedException(`unauthorized error`);
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    try {
+      const user = await this.usersRepository.findOne({
+        where: { SnsId: userData.id, Provider: userData.provider },
+      });
+      if (!user) {
+        throw new UnauthorizedException(`unauthorized error`);
+      }
+      const filteredUser = Object.keys(user)
+        .filter((key) => key === 'Nick' || key === 'point')
+        .reduce((cur, key) => {
+          return Object.assign(cur, { [key]: user[key] });
+        }, {});
+
+      return filteredUser;
+    } catch (error) {
+      throw new NotFoundException('unknown error');
+    }
   }
 
   test() {
     return this.config.get('DB_USERNAME') || 'no secret is here';
+  }
+
+  async randomNick() {
+    const rand = Math.floor(Math.random() * 100);
+    const code = {
+      eye: Math.floor(Math.random() * 3),
+      mouth: Math.floor(Math.random() * 3),
+      arm: Math.floor(Math.random() * 3),
+      body: Math.floor(Math.random() * 3),
+      horn: Math.floor(Math.random() * 3),
+      ear: Math.floor(Math.random() * 3),
+      leg: Math.floor(Math.random() * 3),
+      tail: Math.floor(Math.random() * 3),
+      pattern: Math.floor(Math.random() * 3),
+      walkingLeg1: Math.floor(Math.random() * 3),
+      walkingLeg2: Math.floor(Math.random() * 3),
+    };
+    return {
+      Nick: '테스팅용 랜덤' + rand,
+      code,
+    };
+  }
+
+  async patchUser(token: any, body: string) {
+    let userData: jwtParsed;
+    try {
+      userData = await jwt.verify(token, this.config.get('secret'));
+    } catch (error) {
+      throw new UnauthorizedException(`unauthorized error`);
+    }
+    try {
+      const user = await this.usersRepository.findOne({
+        where: { SnsId: userData.id, Provider: userData.provider },
+      });
+      if (!user) {
+        throw new UnauthorizedException(`unauthorized error`);
+      }
+      user.Nick = body;
+      await user.save();
+      return {
+        result: true,
+        Nick: body,
+      };
+    } catch (error) {
+      throw new NotFoundException('unknown error');
+    }
   }
 }
