@@ -44,6 +44,9 @@ export class MultiGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     newNamespace.emit('ConnectedUsers', Object.values(ConnectedUsers[client.nsp.name]));
     console.log('join', client.nsp.name, data.roomid);
     client.join(`${client.nsp.name}-${data.roomid}`);
+    this.server.sockets.adapter.on("join-room", (room, id) => {
+      console.log(`socket ${id} has joined room ${room}`);
+    })
   }
 
   handleConnection(client: Socket) {
