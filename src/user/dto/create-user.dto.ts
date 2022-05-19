@@ -7,14 +7,7 @@ export class CreateBookDto {
     example: 3,
     description: '눈 코드',
   })
-  public eye: number;
-
-  @IsNumber()
-  @ApiProperty({
-    example: 3,
-    description: '입 코드',
-  })
-  public mouth: number;
+  public face: number;
 
   @IsNumber()
   @ApiProperty({
@@ -29,13 +22,6 @@ export class CreateBookDto {
     description: '몸 코드',
   })
   public body: number;
-
-  @IsNumber()
-  @ApiProperty({
-    example: 3,
-    description: '뿔 코드',
-  })
-  public horn: number;
 
   @IsNumber()
   @ApiProperty({
@@ -57,27 +43,6 @@ export class CreateBookDto {
     description: '꼬리 코드',
   })
   public tail: number;
-
-  @IsNumber()
-  @ApiProperty({
-    example: 3,
-    description: '패턴 코드',
-  })
-  public pattern: number;
-
-  @IsNumber()
-  @ApiProperty({
-    example: 3,
-    description: '걷는 다리1',
-  })
-  public walkingLeg1: number;
-
-  @IsNumber()
-  @ApiProperty({
-    example: 3,
-    description: '걷는 다리2',
-  })
-  public walkingLeg2: number;
 }
 export class ResponseBookDto {
   @ApiProperty({
@@ -95,17 +60,12 @@ export class ResponseBookDto {
   @ApiProperty({
     example: [
       {
-        eye: 3,
-        mouth: 3,
+        face: 3,
         arm: 3,
         body: 3,
-        horn: 3,
         ear: 3,
         leg: 3,
         tail: 3,
-        pattern: 3,
-        walkingLeg1: 3,
-        walkingLeg2: 3,
       },
     ],
     description:
