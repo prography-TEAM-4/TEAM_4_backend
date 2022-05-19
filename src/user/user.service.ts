@@ -118,18 +118,19 @@ export class UserService {
 
   async randomNick() {
     const rand = Math.floor(Math.random() * 100);
+    const ImgCode = Math.floor(Math.random() * 6);
     const code = {
-      eye: Math.floor(Math.random() * 3),
-      mouth: Math.floor(Math.random() * 3),
-      arm: Math.floor(Math.random() * 3),
-      body: Math.floor(Math.random() * 3),
-      horn: Math.floor(Math.random() * 3),
-      ear: Math.floor(Math.random() * 3),
-      leg: Math.floor(Math.random() * 3),
-      tail: Math.floor(Math.random() * 3),
-      pattern: Math.floor(Math.random() * 3),
-      walkingLeg1: Math.floor(Math.random() * 3),
-      walkingLeg2: Math.floor(Math.random() * 3),
+      eye: ImgCode,
+      mouth: ImgCode,
+      arm: ImgCode,
+      body: ImgCode,
+      horn: ImgCode,
+      ear: ImgCode,
+      leg: ImgCode,
+      tail: ImgCode,
+      pattern: ImgCode,
+      walkingLeg1: ImgCode,
+      walkingLeg2: ImgCode,
     };
     return {
       Nick: '테스팅용 랜덤' + rand,
