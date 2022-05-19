@@ -92,7 +92,7 @@ export class FriendsService {
 
             // 없는 방이거나 6명 이상인 경우
             if(!room || room.headCount >= 6){
-                throw new HttpException('Not Exist Room', HttpStatus.NOT_FOUND);;
+                throw new HttpException('Not Exist Room', HttpStatus.NOT_FOUND);
             }
             
             if(flag){
@@ -112,6 +112,14 @@ export class FriendsService {
                 }
             }
             // 로그인을 하지 않은 유저
+            const duplicate_check = await this.memberRepository.find({
+                where: { Nick: nick }
+            });
+
+            if(duplicate_check){
+                throw new HttpException('Duplicated Nickname', HttpStatus.BAD_REQUEST);;
+            }
+
             const member = new Member;
             member.Nick = nick;
             member.room = room;
