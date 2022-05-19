@@ -28,35 +28,52 @@ export class FriendsService {
     ){}
 
     // 방 만들기
-    async createFriendsRoom(createFriendsRoomDto: CreateFriendsRoomDto, token: any){
+    async createFriendsRoom(nick: string, token: any){
         let userData: jwtParsed;
+        var flag: boolean = true;
         try{
             userData = jwt.verify(token, this.config.get('secret'));
         }catch(error){
-            throw new UnauthorizedException(`unauthorized error`);
-        }
+            //throw new UnauthorizedException(`unauthorized error`);
+            flag = false;
+        }finally{
+            if(flag){
+                const existUser = await this.userRepository.findOne({
+                    where: { 
+                        SnsId: userData.id,
+                        Provider: userData.provider,
+                    }
+                });
 
-        const existUser = await this.userRepository.findOne({
-            where: { 
-                SnsId: userData.id,
-                Provider: userData.provider,
+                // 로그인 한 경우 가능
+                if(existUser){
+                    const roomid: string = v4();
+
+                    const room = new Room;
+                    room.roomid = roomid;
+                    room.host = existUser.SnsId;
+                    room.headCount = 0;
+                    room.status = "FRIENDS";
+                    await this.friendsRoomRepository.save(room);
+                    return room;
+                }
             }
-        });
+            // 테스트용: 비로그인 시에도 가능하게끔
+            else{
+                const roomid: string = v4();
 
-        // 로그인 한 경우 가능
-        if(existUser){
-            const roomid: string = v4();
+                const room = new Room;
+                room.roomid = roomid;
+                room.host = nick;
+                room.headCount = 0;
+                room.status = "FRIENDS";
+                await this.friendsRoomRepository.save(room);
 
-            const room = new Room;
-            room.roomid = roomid;
-            room.host = createFriendsRoomDto.host;
-            room.headCount = 0;
-            room.status = "FRIENDS";
-            await this.friendsRoomRepository.save(room);
-            return room;
-        }
-        else{
-            console.log('unlogined error');
+                const member = new Member;
+                member.Nick = nick;
+                await this.memberRepository.save(member);
+                return room;
+            }
         }
     }
     // 방 가져오기
