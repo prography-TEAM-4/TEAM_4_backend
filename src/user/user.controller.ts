@@ -9,11 +9,13 @@ import {
   Header,
   Headers,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateBookDto, ResponseBookDto } from './dto/create-user.dto';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiHeader,
   ApiOperation,
   ApiResponse,
@@ -23,44 +25,44 @@ import {
 import { LoggedInGuard } from 'src/oauth/logged-in.guard';
 
 @ApiTags('Users')
-@ApiBearerAuth('jwt')
-@ApiHeader({
-  name: 'Authorization',
-  description: 'eyJhGcioJ와 같은 accessToken',
-})
 @ApiResponse({
-  status: 401,
-  description: '토큰 시간 초과, 잘못된 유저 등 모든 로그인 실패... ',
+  description: 'check data type again',
+  status: 400,
   schema: {
     example: {
       success: false,
-      code: 401,
-      data: 'unauthorized error',
+      code: 400,
+      data: [
+        'walkingLeg2 must be a number conforming to the specified constraints',
+      ],
     },
-  },
-})
-@ApiResponse({
-  description: 'unknown error',
-  status: 404,
-  schema: {
-    example: { success: false, code: 404, data: 'unknown error' },
   },
 })
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @ApiBearerAuth('jwt')
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'eyJhGcioJ와 같은 accessToken',
+  })
   @ApiResponse({
-    description: 'check data type again',
-    status: 400,
+    status: 401,
+    description: '토큰 시간 초과, 잘못된 유저 등 모든 로그인 실패... ',
     schema: {
       example: {
         success: false,
-        code: 400,
-        data: [
-          'walkingLeg2 must be a number conforming to the specified constraints',
-        ],
+        code: 401,
+        data: 'unauthorized error',
       },
+    },
+  })
+  @ApiResponse({
+    description: 'unknown error',
+    status: 404,
+    schema: {
+      example: { success: false, code: 404, data: 'unknown error' },
     },
   })
   @ApiResponse({
@@ -95,6 +97,29 @@ export class UserController {
     return await this.userService.create(createUserDto, token);
   }
 
+  @ApiBearerAuth('jwt')
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'eyJhGcioJ와 같은 accessToken',
+  })
+  @ApiResponse({
+    status: 401,
+    description: '토큰 시간 초과, 잘못된 유저 등 모든 로그인 실패... ',
+    schema: {
+      example: {
+        success: false,
+        code: 401,
+        data: 'unauthorized error',
+      },
+    },
+  })
+  @ApiResponse({
+    description: 'unknown error',
+    status: 404,
+    schema: {
+      example: { success: false, code: 404, data: 'unknown error' },
+    },
+  })
   @ApiOperation({
     summary: '로그인 되어 있는 유저에 대한 모든 도감 데이터를 가져온다',
   })
@@ -171,5 +196,115 @@ export class UserController {
   @Get('test')
   findTest() {
     return this.userService.test();
+  }
+
+  @ApiBearerAuth('jwt')
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'eyJhGcioJ와 같은 accessToken',
+  })
+  @ApiResponse({
+    status: 401,
+    description: '토큰 시간 초과, 잘못된 유저 등 모든 로그인 실패... ',
+    schema: {
+      example: {
+        success: false,
+        code: 401,
+        data: 'unauthorized error',
+      },
+    },
+  })
+  @ApiResponse({
+    description: 'unknown error',
+    status: 404,
+    schema: {
+      example: { success: false, code: 404, data: 'unknown error' },
+    },
+  })
+  @ApiOperation({ summary: '유저 프로필 정보 조회' })
+  @ApiResponse({
+    status: 200,
+    description: '가져오기 성공 point는 미래를 위한 db세팅',
+    schema: {
+      example: {
+        Nick: 'testing',
+        point: 0,
+      },
+    },
+  })
+  @Get()
+  async findUser(@Headers('Authorization') token: any) {
+    return await this.userService.findUser(token);
+  }
+
+  @ApiOperation({ summary: '랜덤 유저 프로필 생성기' })
+  @ApiResponse({
+    status: 200,
+    description: '닉네임, 코드 랜덤 배정. 범위는 합의 필요',
+    schema: {
+      example: {
+        Nick: '테스팅용 랜덤55',
+        code: {
+          eye: 2,
+          mouth: 2,
+          arm: 2,
+          body: 1,
+          horn: 0,
+          ear: 1,
+          leg: 1,
+          tail: 1,
+          pattern: 0,
+          walkingLeg1: 2,
+          walkingLeg2: 0,
+        },
+      },
+    },
+  })
+  @Get('/random')
+  async getRandom() {
+    return await this.userService.randomNick();
+  }
+
+  @ApiBearerAuth('jwt')
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'eyJhGcioJ와 같은 accessToken',
+  })
+  @ApiResponse({
+    status: 401,
+    description: '토큰 시간 초과, 잘못된 유저 등 모든 로그인 실패... ',
+    schema: {
+      example: {
+        success: false,
+        code: 401,
+        data: 'unauthorized error',
+      },
+    },
+  })
+  @ApiBody({
+    description: 'body',
+    schema: {
+      example: {
+        Nick: 'test용 닉네임 1234',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: '성공',
+    schema: {
+      example: {
+        result: true,
+        Nick: '변화된 닉네임',
+      },
+    },
+  })
+  @ApiOperation({ summary: '닉네임 저장하기' })
+  @Put('/nick')
+  async patchNick(
+    @Headers('Authorization') token: any,
+    @Body('Nick') body: string,
+  ) {
+    return await this.userService.patchUser(token, body);
   }
 }
