@@ -37,5 +37,8 @@ export class Member extends BaseEntity {
   
     @OneToMany((type) => RoomChat, (roomchat) => roomchat.member)
     roomchat: RoomChat[];
+
+    @Column({ default: null })
+    all: string;
 }
   
