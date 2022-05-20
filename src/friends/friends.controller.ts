@@ -96,8 +96,9 @@ export class FriendsController {
         @Param('roomid') roomid,
         @Headers('Authorization') token: any,
         @Body('nick') nick, 
+        @Body('imgCode') imgCode,
     ) {
-        return this.friendsService.getFriendsRoom(roomid, token, nick);
+        return this.friendsService.getFriendsRoom(roomid, token, nick, imgCode);
     }
 
     @ApiParam({

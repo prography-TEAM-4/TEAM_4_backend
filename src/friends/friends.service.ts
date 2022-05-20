@@ -77,7 +77,7 @@ export class FriendsService {
         }
     }
     // 방 가져오기
-    async getFriendsRoom(roomid: string, token: any, nick: string) {
+    async getFriendsRoom(roomid: string, token: any, nick: string, imgCode: string) {
         let userData: jwtParsed;
         var flag: boolean = true;
 
@@ -104,6 +104,7 @@ export class FriendsService {
                 });
                 if(existUser){
                     existUser.room = room;
+                    existUser.all = imgCode;
                     this.userRepository.save(existUser);
 
                     room.headCount += 1;
@@ -112,7 +113,7 @@ export class FriendsService {
                 }
             }
             // 로그인을 하지 않은 유저
-            const duplicate_check = await this.memberRepository.find({
+            const duplicate_check = await this.memberRepository.findOne({
                 where: { Nick: nick }
             });
 
@@ -123,7 +124,8 @@ export class FriendsService {
             const member = new Member;
             member.Nick = nick;
             member.room = room;
-            this.memberRepository.save(member);
+            member.all = imgCode;
+            await this.memberRepository.save(member);
 
             const memberList: Array<Member> = await this.memberRepository
                 .createQueryBuilder('members')
@@ -133,7 +135,7 @@ export class FriendsService {
                 .getMany();
 
             room.headCount += 1;
-            this.friendsRoomRepository.save(room);
+            await this.friendsRoomRepository.save(room);
 
             const userList: Array<Member> = await this.userRepository
                 .createQueryBuilder('users')
