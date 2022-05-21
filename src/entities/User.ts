@@ -33,6 +33,9 @@ export class User extends BaseEntity {
   @Column({ default: 0 })
   point: number;
 
+  @Column({ nullable: true })
+  all: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -50,5 +53,4 @@ export class User extends BaseEntity {
 
   @OneToMany((type) => RoomChat, (roomchat) => roomchat.user)
   roomchat: RoomChat[];
-
 }
