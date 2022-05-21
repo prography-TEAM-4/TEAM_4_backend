@@ -34,8 +34,8 @@ on:
 env:
   AWS_REGION: ap-northeast-2 # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: ecr_7th_team4 # set this to your Amazon ECR repository name
-  ECS_SERVICE: 7th-team4-service # set this to your Amazon ECS service name
-  ECS_CLUSTER: cluster-7th-team4 # set this to your Amazon ECS cluster name
+  ECS_SERVICE: service2-7th-team4 # set this to your Amazon ECS service name
+  ECS_CLUSTER: cluster2-7th-team4 # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION:
     .aws/task-definition.json # set this to the path to your Amazon ECS task definition
     # file, e.g. .aws/task-definition.json
@@ -55,6 +55,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        # run: |
+        #   sed -i "s/<db_username>/$DB_USERNAME/g" task.json
+        #   sed -i "s/<db_username>/$DB_PASSWORD/g" task.json
+        #   sed -i "s/<db_username>/$DB_HOST/g" task.json
+        #   sed -i "s/<db_username>/$DB_DATABASE/g" task.json
+        # env:
+        #   DB_USERNAME: ${{secrets.DB_USERNAME}}
+        #   DB_HOST: ${{secrets.DB_HOST}}
+        #   DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+        #   DB_DATABASE: ${{secrets.DB_DATABASE}}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -66,6 +76,20 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Create .env file
+        run: |
+          touch .env
+          echo SECRET=${{ secrets.SECRET }} >> .env
+          echo test=${{ secrets.test }} >> .env
+          echo DB_HOST=${{ secrets.DB_HOST }} >> .env
+          echo DB_USERNAME=${{ secrets.DB_USERNAME }} >> .env
+          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
+          echo DB_DATABASE=${{ secrets.DB_DATABASE }} >> .env
+          echo GOOGLE_CLIENTID=${{ secrets.GOOGLE_CLIENTID }} >> .env
+          echo GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} >> .env
+          echo GOOGLE_REDIRECT=${{ secrets.GOOGLE_REDIRECT }} >> .env
+          cat .env
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
