@@ -33,13 +33,6 @@ export class MultiGateway
   afterInit(server: Server) {
     console.log('WebSockets Init');
   }
-  @SubscribeMessage('start')
-  handleStart(
-    @MessageBody() roomid: string,
-    @ConnectedSocket() client: Socket,
-  ) {
-    client.to(`/room-${client.nsp.name}-${roomid}`).emit('start', 'start');
-  }
 
   // 이벤트 발생 시
   @SubscribeMessage('enter')
@@ -60,15 +53,12 @@ export class MultiGateway
       console.log(`socket ${id} has joined room ${room}`);
     });
   }
-
   @SubscribeMessage('start')
   handleStart(
     @MessageBody() roomid: string,
-    @ConnectedSocket() client: Socket
-  ){
-    client
-      .to(`/room-${client.nsp.name}-${roomid}`)
-      .emit('start', 'start');
+    @ConnectedSocket() client: Socket,
+  ) {
+    client.to(`/room-${client.nsp.name}-${roomid}`).emit('start', 'start');
   }
 
   handleConnection(client: Socket) {
