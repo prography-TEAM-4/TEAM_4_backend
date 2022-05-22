@@ -66,7 +66,6 @@ export class FriendsController {
   ) {
     return await this.friendsService.createFriendsRoom(nick, token);
   }
-
   @ApiParam({
     name: 'roomid',
     description: '입장하려는 방 코드',

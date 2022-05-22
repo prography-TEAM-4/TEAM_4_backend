@@ -61,6 +61,16 @@ export class MultiGateway
     });
   }
 
+  @SubscribeMessage('start')
+  handleStart(
+    @MessageBody() roomid: string,
+    @ConnectedSocket() client: Socket
+  ){
+    client
+      .to(`/room-${client.nsp.name}-${roomid}`)
+      .emit('start', 'start');
+  }
+
   handleConnection(client: Socket) {
     console.log('connected', client.nsp.name);
 
