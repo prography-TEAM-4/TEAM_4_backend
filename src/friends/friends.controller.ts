@@ -106,7 +106,7 @@ export class FriendsController {
     @Body('nick') nick: string,
     @Body('imgCode') imgCode: string,
   ) {
-    return this.friendsService.getFriendsRoom(roomid, token, nick, imgCode);
+    return await this.friendsService.getFriendsRoom(roomid, token, nick, imgCode);
   }
 
   @ApiParam({
@@ -139,7 +139,7 @@ export class FriendsController {
     @Query('perPage', ParseIntPipe) perPage: number,
     @Query('page', ParseIntPipe) page: number,
   ) {
-    return this.friendsService.getFriendsRoomChats(roomid, perPage, page);
+    return await this.friendsService.getFriendsRoomChats(roomid, perPage, page);
   }
 
   @ApiHeader({
@@ -183,7 +183,7 @@ export class FriendsController {
     @Body('content') content: string,
     @Body('memberId') memberId: number,
   ) {
-    return this.friendsService.creatFriendsRoomChats(
+    return await this.friendsService.creatFriendsRoomChats(
       token,
       roomid,
       content,
@@ -191,9 +191,33 @@ export class FriendsController {
     );
   }
 
+  @ApiParam({
+    name: 'roomid',
+    description: '삭제하려는 방 코드',
+  })
+  @ApiResponse({
+    description: '친구방 삭제 생성 성공',
+    status: 200,
+    schema: {
+      example: {
+        result: 'success',
+      },
+    },
+  })
+  @ApiResponse({
+    description: '친구방 삭제 생성 실패 (roomid 오류)',
+    status: 404,
+    schema: {
+      example: {
+        result: 'fail',
+      },
+    },
+  })
   @ApiOperation({ summary: '친구방 삭제하기' })
-  @Delete(':rooid')
-  async removeFriendsRoomChats(@Param('roomid') roomid: string) {
-    return this.friendsService.removeFriendsRoom(roomid);
+  @Delete(':roomid')
+  async removeFriendsRoomChats(
+    @Param('roomid') roomid: string,
+  ) {
+    return await this.friendsService.removeFriendsRoom(roomid);
   }
 }

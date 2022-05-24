@@ -159,7 +159,40 @@ export class FriendsService {
   }
 
   async removeFriendsRoom(roomid: string) {
-    return this.friendsRoomRepository.delete(roomid);
+    var result: string;
+    try{
+      const destroyRoom = await this.friendsRoomRepository.findOne({
+        where: { roomid: roomid, },
+      });
+
+      // chat 삭제
+      await this.friendsRoomChatRepository.delete({
+        room: destroyRoom,
+      });
+
+      // member 삭제
+      await this.memberRepository.delete({
+        room: destroyRoom,
+      });
+
+      // user roomid 값을 null로 변경
+      const users = await this.userRepository.find({
+        where: { room: destroyRoom, },
+      });
+      users.forEach( async (user) => {
+        user.room = null;
+        user.all = null;
+        await this.userRepository.save(user);
+      })
+
+      // 방 삭제
+      await this.friendsRoomRepository.delete(destroyRoom);
+      result = 'success'
+      return result;
+    } catch(error){
+      result = 'fail'
+      return result;
+    }
   }
 
   async getFriendsRoomChats(roomid: string, perPage: number, page: number) {
@@ -219,7 +252,10 @@ export class FriendsService {
 
       if (!flag) {
         const existMember = await this.memberRepository.findOne({
-          where: { id: memberid },
+          where: { 
+            Nick: memberid,
+            room: room,
+          },
         });
 
         if (!existMember) {
