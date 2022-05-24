@@ -35,7 +35,7 @@ export class FriendsService {
   // 방 만들기
   async createFriendsRoom(nick: string, token: any) {
     let userData: jwtParsed;
-    var flag: boolean = true;
+    let flag: boolean = true;
     try {
       userData = jwt.verify(token, this.config.get('secret'));
     } catch (error) {
@@ -89,7 +89,7 @@ export class FriendsService {
     imgCode: string,
   ) {
     let userData: jwtParsed;
-    var flag: boolean = true;
+    let flag: boolean = true;
 
     try {
       userData = jwt.verify(token, this.config.get('secret'));
@@ -159,10 +159,9 @@ export class FriendsService {
   }
 
   async removeFriendsRoom(roomid: string) {
-    var result: string;
-    try{
+    try {
       const destroyRoom = await this.friendsRoomRepository.findOne({
-        where: { roomid: roomid, },
+        where: { roomid: roomid },
       });
 
       // chat 삭제
@@ -177,21 +176,19 @@ export class FriendsService {
 
       // user roomid 값을 null로 변경
       const users = await this.userRepository.find({
-        where: { room: destroyRoom, },
+        where: { room: destroyRoom },
       });
-      users.forEach( async (user) => {
+      users.forEach(async (user) => {
         user.room = null;
         user.all = null;
         await this.userRepository.save(user);
-      })
+      });
 
       // 방 삭제
       await this.friendsRoomRepository.delete(destroyRoom);
-      result = 'success'
-      return result;
-    } catch(error){
-      result = 'fail'
-      return result;
+      return { result: 'success' };
+    } catch (error) {
+      return { result: 'fail' };
     }
   }
 
@@ -217,7 +214,7 @@ export class FriendsService {
     memberid: number,
   ) {
     let userData: jwtParsed;
-    var flag: boolean = true;
+    let flag: boolean = true;
     try {
       userData = jwt.verify(token, this.config.get('secret'));
     } catch (error) {
@@ -252,7 +249,7 @@ export class FriendsService {
 
       if (!flag) {
         const existMember = await this.memberRepository.findOne({
-          where: { 
+          where: {
             Nick: memberid,
             room: room,
           },
