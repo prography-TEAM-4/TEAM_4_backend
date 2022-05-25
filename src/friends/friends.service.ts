@@ -192,7 +192,7 @@ export class FriendsService {
     }
   }
 
-  async getFriendsRoomChats(roomid: string, perPage: number, page: number) {
+  async getFriendsRoomChats(roomid: string) {
     return this.friendsRoomChatRepository
       .createQueryBuilder('roomChats')
       .innerJoin('roomChats.room', 'room', 'room.roomid = :roomid', {
@@ -201,8 +201,7 @@ export class FriendsService {
       .leftJoinAndSelect('roomChats.user', 'user')
       .leftJoinAndSelect('roomChats.member', 'member')
       .orderBy('roomChats.createdAt', 'DESC')
-      .take(perPage)
-      .skip(perPage * (page - 1))
+      .take(10)
       .getMany();
   }
 
@@ -276,6 +275,7 @@ export class FriendsService {
       console.log(
         `/room-${chatWithUser.room.status}-${chatWithUser.room.roomid}`,
       );
+      return { result: 'success' };
     }
   }
 }
