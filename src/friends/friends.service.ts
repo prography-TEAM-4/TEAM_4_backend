@@ -65,6 +65,15 @@ export class FriendsService {
       }
       // 테스트용: 비로그인 시에도 가능하게끔
       else {
+        // 중복 닉네임 예외처리
+        const duplicate_check = await this.memberRepository.findOne({
+          where: { Nick: nick },
+        });
+
+        if (duplicate_check) {
+          throw new HttpException('Duplicated Nickname', HttpStatus.BAD_REQUEST);
+        }
+
         const roomid: string = v4();
 
         const room = new Room();
