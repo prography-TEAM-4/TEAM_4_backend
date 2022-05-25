@@ -1,5 +1,12 @@
-import { Body, Controller, Get, Post, Headers } from '@nestjs/common';
-import { ApiBody, ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { 
+    Body, 
+    Controller, 
+    Get, 
+    Post, 
+    Headers, 
+    Param 
+} from '@nestjs/common';
+import { ApiBody, ApiHeader, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RandomService } from './random.service';
 
 @ApiTags('Multi - Random')
@@ -12,42 +19,16 @@ export class RandomController {
 
     // }
 
-    @ApiHeader({
-        name: 'Authorization',
-        description: 'eyJhGcioJ와 같은 accessToken',
-    })
-    @ApiBody({
-        description: '비로그인 유저는 닉네임, 로그인 유저는 null',
-        schema: {
-            example: { nick: 'example' },
-        },
-    })
-    @ApiResponse({
-        description: '로그인 유저: 랜덤방 만들기 성공',
-        status: 200,
-        schema: {
-            example: {
-                result: 'create success',
-                room: [{
-                    id: 'id', 
-                    roomid: 'b7817821-dc63-4f09-97cc-32d466701077', 
-                    host: 'user@example.com', 
-                    headCount: '0', 
-                    status: 'RANDOM', 
-                }],
-            },
-        },
-    })
     @ApiResponse({
         description: '비로그인 유저: 랜덤방 만들기 성공',
-        status: 200,
+        status: 201,
         schema: {
             example: {
                 result: 'create success',
                 room: [{
                     id: 'id', 
                     roomid: 'b7817821-dc63-4f09-97cc-32d466701077', 
-                    host: 'member1', 
+                    host: 'RANDOM', 
                     headCount: '0', 
                     status: 'RANDOM', 
                 }],
@@ -72,10 +53,85 @@ export class RandomController {
     })
     @ApiOperation({ summary: '랜덤매칭' })
     @Post('')
-    async createOrMatch(
+    async createOrMatchRoom(){
+        return this.randomService.createOrMatch();
+    }
+
+    @ApiParam({
+        name: 'roomid',
+        description: '입장하려는 방 코드',
+    })
+    @ApiHeader({
+        name: 'Authorization',
+        description: 'eyJhGcioJ와 같은 accessToken',
+    })
+    @ApiBody({
+        description: '비로그인 유저는 닉네임, 로그인 유저는 null',
+        schema: {
+            example: { nick: 'example' },
+        },
+    })
+    @ApiResponse({
+        description: 'not exist room',
+        status: 404,
+        schema: {
+            example: { success: false, code: 404, data: 'unknown error' },
+        },
+    })
+    @ApiResponse({
+        description: '로그인 유저 - 랜덤방 입장 성공',
+        status: 200,
+        schema: {
+            example: {
+                userList: [[
+                    {
+                        id: '1',
+                        SnsId: 'user@example.com',
+                        Nick: 'exampleUser',
+                        Provider: 'examplePlatform',
+                        point: 0,
+                        all: 'tjwmqoalx-example-code1',
+                        createAt: '2022-05-23T07:09:54.678Z',
+                        deleteAt: null,
+                        updateAt: '2022-05-23T07:09:54.678Z'
+                    },
+                ]],
+                memberList: [[
+                    {
+                        id: '1',
+                        Nick: 'exampleMember',
+                        all: 'tjwmqoalx-example-code2',
+                        createAt: '2022-05-23T07:09:54.678Z',
+                        deleteAt: null,
+                        updateAt: '2022-05-23T07:09:54.678Z'
+                    },
+                    {
+                        id: '5',
+                        Nick: 'exampleMember',
+                        all: 'tjwmqoalx-example-code3',
+                        createAt: '2022-05-23T07:10:54.678Z',
+                        deleteAt: null,
+                        updateAt: '2022-05-23T07:10:54.678Z'
+                    }
+                ]], 
+                room: [{ 
+                    id: '1',
+                    roomid: 'a199ead7-4dfc-429a-a62c-84b6039854ac', 
+                    host: 'host', 
+                    headCount: '3', 
+                    status: 'FRIENDS', 
+                }],
+            },
+        },
+    })
+    @ApiOperation({ summary: '랜덤방 입장하기' })
+    @Post(':roomid')
+    async getRandomRoom(
+        @Param('roomid') roomid: string,
         @Headers('Authorization') token: any,
         @Body('nick') nick: string,
+        @Body('imgCode') imgCode: string,
     ){
-        return this.randomService.createOrMatch(token, nick);
+        return this.randomService.enterRoom(roomid, token, nick, imgCode);
     }
 }
