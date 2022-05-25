@@ -83,9 +83,10 @@ export class FriendsService {
         room.status = 'FRIENDS';
         await this.friendsRoomRepository.save(room);
 
-        const member = new Member();
-        member.Nick = nick;
-        await this.memberRepository.save(member);
+        // 바로 입장을 진행하기 때문에 member 생성은 방 입장 시 진행
+        // const member = new Member();
+        // member.Nick = nick;
+        // await this.memberRepository.save(member);
         return room;
       }
     }
