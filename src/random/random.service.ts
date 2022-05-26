@@ -1,7 +1,9 @@
 import { 
+    BadRequestException,
     HttpException, 
     HttpStatus, 
-    Injectable 
+    Injectable, 
+    NotFoundException
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,6 +16,7 @@ import { jwtParsed } from 'src/user/dto/userdata.dto';
 import { Not, Repository } from 'typeorm';
 import * as jwt from 'jsonwebtoken';
 import { v4 } from 'uuid';
+import { Player } from './random-mode.player';
 
 @Injectable()
 export class RandomService {
@@ -85,7 +88,12 @@ export class RandomService {
 
             // 없는 방이거나 6명 이상인 경우
             if (!room || room.headCount >= 6) {
-                throw new HttpException('Not Exist Room', HttpStatus.NOT_FOUND);
+                // throw new HttpException(
+                //     {
+                //         status: HttpStatus.NOT_FOUND,
+                //         error: 'Not Exist Room',
+                //     }, HttpStatus.NOT_FOUND);
+                throw new BadRequestException('Not Exist Room');
             }
 
             if (flag) {
@@ -112,7 +120,7 @@ export class RandomService {
                 });
 
                 if (duplicate_check) {
-                    throw new HttpException('Duplicated Nickname', HttpStatus.BAD_REQUEST);
+                    throw new BadRequestException('Duplicated Nickname');
                 }
 
                 const member = new Member();
@@ -132,14 +140,24 @@ export class RandomService {
             room.headCount += 1;
             await this.randomRoomRepository.save(room);
 
-            const userList: Array<Member> = await this.userRepository
+            const userList: Array<User> = await this.userRepository
                 .createQueryBuilder('users')
                 .innerJoin('users.room', 'room', 'room.roomid = :roomid', {
                     roomid,
                 })
                 .getMany();
 
-            return { userList, memberList, room };
+                let playerList: Array<Player> = [];
+
+                memberList.forEach((member) => {
+                  playerList.push(new Player(member.id, member.Nick, member.all, -1, false));
+                })
+          
+                userList.forEach((user) => {
+                  playerList.push(new Player(user.id, user.Nick, user.all, user.point, true));
+                })
+          
+                return { playerList, room };
         }
     }
 }
