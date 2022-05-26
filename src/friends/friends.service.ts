@@ -35,7 +35,7 @@ export class FriendsService {
   // 방 만들기
   async createFriendsRoom(nick: string, token: any) {
     let userData: jwtParsed;
-    var flag: boolean = true;
+    let flag: boolean = true;
     try {
       userData = jwt.verify(token, this.config.get('secret'));
     } catch (error) {
@@ -89,7 +89,7 @@ export class FriendsService {
     imgCode: string,
   ) {
     let userData: jwtParsed;
-    var flag: boolean = true;
+    let flag: boolean = true;
 
     try {
       userData = jwt.verify(token, this.config.get('secret'));
@@ -159,7 +159,37 @@ export class FriendsService {
   }
 
   async removeFriendsRoom(roomid: string) {
-    return this.friendsRoomRepository.delete(roomid);
+    try {
+      const destroyRoom = await this.friendsRoomRepository.findOne({
+        where: { roomid: roomid },
+      });
+
+      // chat 삭제
+      await this.friendsRoomChatRepository.delete({
+        room: destroyRoom,
+      });
+
+      // member 삭제
+      await this.memberRepository.delete({
+        room: destroyRoom,
+      });
+
+      // user roomid 값을 null로 변경
+      const users = await this.userRepository.find({
+        where: { room: destroyRoom },
+      });
+      users.forEach(async (user) => {
+        user.room = null;
+        user.all = null;
+        await this.userRepository.save(user);
+      });
+
+      // 방 삭제
+      await this.friendsRoomRepository.delete(destroyRoom);
+      return { result: 'success' };
+    } catch (error) {
+      return { result: 'fail' };
+    }
   }
 
   async getFriendsRoomChats(roomid: string, perPage: number, page: number) {
@@ -184,7 +214,7 @@ export class FriendsService {
     memberid: number,
   ) {
     let userData: jwtParsed;
-    var flag: boolean = true;
+    let flag: boolean = true;
     try {
       userData = jwt.verify(token, this.config.get('secret'));
     } catch (error) {
@@ -219,7 +249,10 @@ export class FriendsService {
 
       if (!flag) {
         const existMember = await this.memberRepository.findOne({
-          where: { id: memberid },
+          where: {
+            Nick: memberid,
+            room: room,
+          },
         });
 
         if (!existMember) {
