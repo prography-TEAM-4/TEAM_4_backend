@@ -19,19 +19,30 @@ export class RandomController {
 
     // }
 
+    @ApiResponse({ 
+        description: 'Duplicate Nickname', 
+        status: 400, 
+        schema: { 
+          example: { 
+                success: false, 
+                code: 400, 
+                data: 'Duplicate Nickname'
+            }, 
+        }, 
+      })
     @ApiResponse({
         description: '비로그인 유저: 랜덤방 만들기 성공',
         status: 201,
         schema: {
             example: {
                 result: 'create success',
-                room: [{
+                room: {
                     id: 'id', 
                     roomid: 'b7817821-dc63-4f09-97cc-32d466701077', 
                     host: 'RANDOM', 
                     headCount: '0', 
                     status: 'RANDOM', 
-                }],
+                },
             },
         },
     })
@@ -41,13 +52,13 @@ export class RandomController {
         schema: {
             example: {
                 result: 'matching success',
-                room: [{
+                room: {
                     id: 'id', 
                     roomid: 'b7817821-dc63-4f09-97cc-32d466701077', 
                     host: 'member1', 
                     headCount: '5', 
                     status: 'RANDOM', 
-                }],
+                },
             },
         },
     })
@@ -71,11 +82,26 @@ export class RandomController {
             example: { nick: 'example' },
         },
     })
+    @ApiResponse({ 
+        description: 'Duplicate Nickname', 
+        status: 400, 
+        schema: { 
+          example: { 
+                success: false, 
+                code: 400, 
+                data: 'Duplicate Nickname'
+            }, 
+        }, 
+      })
     @ApiResponse({
         description: 'not exist room',
         status: 404,
         schema: {
-            example: { success: false, code: 404, data: 'unknown error' },
+            example: { 
+                success: false, 
+                code: 400, 
+                data: 'Not Exist Room' 
+            },
         },
     })
     @ApiResponse({
@@ -83,37 +109,29 @@ export class RandomController {
         status: 200,
         schema: {
             example: {
-                userList: [[
+                playerList: [
                     {
                         id: '1',
-                        SnsId: 'user@example.com',
                         Nick: 'exampleUser',
                         Provider: 'examplePlatform',
+                        all: '1',
                         point: 0,
-                        all: 'tjwmqoalx-example-code1',
-                        createAt: '2022-05-23T07:09:54.678Z',
-                        deleteAt: null,
-                        updateAt: '2022-05-23T07:09:54.678Z'
+                        logined: true,
                     },
-                ]],
-                memberList: [[
                     {
                         id: '1',
                         Nick: 'exampleMember',
-                        all: 'tjwmqoalx-example-code2',
-                        createAt: '2022-05-23T07:09:54.678Z',
-                        deleteAt: null,
-                        updateAt: '2022-05-23T07:09:54.678Z'
+                        all: '2',
+                        point: -1,
+                        logined: false,
                     },
                     {
                         id: '5',
                         Nick: 'exampleMember',
-                        all: 'tjwmqoalx-example-code3',
-                        createAt: '2022-05-23T07:10:54.678Z',
-                        deleteAt: null,
-                        updateAt: '2022-05-23T07:10:54.678Z'
+                        all: '3',
+                        logined: false,
                     }
-                ]], 
+                ],
                 room: [{ 
                     id: '1',
                     roomid: 'a199ead7-4dfc-429a-a62c-84b6039854ac', 
