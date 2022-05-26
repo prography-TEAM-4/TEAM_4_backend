@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -16,6 +17,7 @@ import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { Member } from 'src/entities/Member';
 import { v4 } from 'uuid';
+import { Player } from './friends-Mode.player';
 
 @Injectable()
 export class FriendsService {
@@ -65,6 +67,15 @@ export class FriendsService {
       }
       // 테스트용: 비로그인 시에도 가능하게끔
       else {
+        // 중복 닉네임 예외처리
+        const duplicate_check = await this.memberRepository.findOne({
+          where: { Nick: nick },
+        });
+
+        if (duplicate_check) {
+          throw new BadRequestException('Duplicated Nickname');
+        }
+
         const roomid: string = v4();
 
         const room = new Room();
@@ -74,9 +85,10 @@ export class FriendsService {
         room.status = 'FRIENDS';
         await this.friendsRoomRepository.save(room);
 
-        const member = new Member();
-        member.Nick = nick;
-        await this.memberRepository.save(member);
+        // 바로 입장을 진행하기 때문에 member 생성은 방 입장 시 진행
+        // const member = new Member();
+        // member.Nick = nick;
+        // await this.memberRepository.save(member);
         return room;
       }
     }
@@ -102,7 +114,7 @@ export class FriendsService {
 
       // 없는 방이거나 6명 이상인 경우
       if (!room || room.headCount >= 6) {
-        throw new HttpException('Not Exist Room', HttpStatus.NOT_FOUND);
+        throw new BadRequestException('Not Exist Room');
       }
 
       if (flag) {
@@ -119,25 +131,30 @@ export class FriendsService {
 
           room.headCount += 1;
           await this.friendsRoomRepository.save(room);
-          return room;
+        }
+        else{
+          flag = false;
         }
       }
-      // 로그인을 하지 않은 유저
-      const duplicate_check = await this.memberRepository.findOne({
-        where: { Nick: nick },
-      });
 
-      if (duplicate_check) {
-        throw new HttpException('Duplicated Nickname', HttpStatus.BAD_REQUEST);
+      if(!flag){
+        // 로그인을 하지 않은 유저
+        const duplicate_check = await this.memberRepository.findOne({
+          where: { Nick: nick },
+        });
+
+        if (duplicate_check) {
+          throw new BadRequestException('Duplicated Nickname');
+        }
+
+        const member = new Member();
+        member.Nick = nick;
+        member.room = room;
+        member.all = imgCode;
+        await this.memberRepository.save(member);
       }
 
-      const member = new Member();
-      member.Nick = nick;
-      member.room = room;
-      member.all = imgCode;
-      await this.memberRepository.save(member);
-
-      const memberList: Array<Member> = await this.memberRepository
+      const memberList = await this.memberRepository
         .createQueryBuilder('members')
         .innerJoin('members.room', 'room', 'room.roomid = :roomid', {
           roomid,
@@ -147,14 +164,24 @@ export class FriendsService {
       room.headCount += 1;
       await this.friendsRoomRepository.save(room);
 
-      const userList: Array<Member> = await this.userRepository
+      const userList = await this.userRepository
         .createQueryBuilder('users')
         .innerJoin('users.room', 'room', 'room.roomid = :roomid', {
           roomid,
         })
         .getMany();
+      
+      let playerList: Array<Player> = [];
 
-      return { userList, memberList, room };
+      memberList.forEach((member) => {
+        playerList.push(new Player(member.id, member.Nick, member.all, -1, false));
+      })
+
+      userList.forEach((user) => {
+        playerList.push(new Player(user.id, user.Nick, user.all, user.point, true));
+      })
+
+      return { playerList, room };
     }
   }
 
@@ -192,7 +219,7 @@ export class FriendsService {
     }
   }
 
-  async getFriendsRoomChats(roomid: string, perPage: number, page: number) {
+  async getFriendsRoomChats(roomid: string) {
     return this.friendsRoomChatRepository
       .createQueryBuilder('roomChats')
       .innerJoin('roomChats.room', 'room', 'room.roomid = :roomid', {
@@ -201,8 +228,7 @@ export class FriendsService {
       .leftJoinAndSelect('roomChats.user', 'user')
       .leftJoinAndSelect('roomChats.member', 'member')
       .orderBy('roomChats.createdAt', 'DESC')
-      .take(perPage)
-      .skip(perPage * (page - 1))
+      .take(10)
       .getMany();
   }
 
@@ -276,6 +302,7 @@ export class FriendsService {
       console.log(
         `/room-${chatWithUser.room.status}-${chatWithUser.room.roomid}`,
       );
+      return { result: 'success' };
     }
   }
 }
