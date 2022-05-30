@@ -53,6 +53,7 @@ export class MultiGateway
       console.log(`socket ${id} has joined room ${room}`);
     });
   }
+
   @SubscribeMessage('start')
   handleStart(
     @MessageBody() roomid: string,
@@ -78,5 +79,17 @@ export class MultiGateway
     delete ConnectedUsers[client.nsp.name][client.id];
     console.log(ConnectedUsers);
     nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
+  }
+
+  // 임시로 구현
+  @SubscribeMessage('sendMessage')
+  sendMessage(
+    @ConnectedSocket() client: Socket, 
+    @MessageBody() data: { roomid: string, nick: string, content: string},
+  ) {
+    client.to(`/room-${client.nsp.name}-${data.roomid}`).emit('getMessage', {
+      nick: data.nick,
+      content: data.content,
+    });
   }
 }
