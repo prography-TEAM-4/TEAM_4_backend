@@ -215,7 +215,7 @@ export class FriendsService {
       await this.friendsRoomRepository.delete(destroyRoom);
       return { result: 'success' };
     } catch (error) {
-      return { result: 'fail' };
+      return new BadRequestException('not Exist Room');
     }
   }
 

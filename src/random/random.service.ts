@@ -194,7 +194,7 @@ export class RandomService {
             await this.randomRoomRepository.delete(destroyRoom);
             return { result: 'success' };
         } catch (error) {
-            return { result: 'fail' };
+            return new BadRequestException('not exist Room');
         }
     }
 

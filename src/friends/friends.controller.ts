@@ -298,11 +298,13 @@ export class FriendsController {
     },
   })
   @ApiResponse({
-    description: '친구방 삭제 생성 실패 (roomid 오류)',
-    status: 404,
+    description: 'not exist room',
+    status: 400,
     schema: {
-      example: {
-        result: 'fail',
+      example: { 
+        success: false, 
+        code: 400, 
+        data: 'not exist Room' 
       },
     },
   })
