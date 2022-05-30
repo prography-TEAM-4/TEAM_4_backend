@@ -193,8 +193,93 @@ export class RandomService {
             // 방 삭제
             await this.randomRoomRepository.delete(destroyRoom);
             return { result: 'success' };
-          } catch (error) {
+        } catch (error) {
             return { result: 'fail' };
-          }
+        }
+    }
+
+    async getRandomRoomChats(roomid: string){
+        return this.randomRoomChatRepository
+            .createQueryBuilder('roomChats')
+            .innerJoin('roomChats.room', 'room', 'room.roomid = :roomid', {
+                roomid,
+            })
+            .leftJoinAndSelect('roomChats.user', 'user')
+            .leftJoinAndSelect('roomChats.member', 'member')
+            .orderBy('roomChats.createdAt', 'DESC')
+            .take(10)
+            .getMany();
+    }
+
+    async createRandomRoomChats(
+        token: any,
+        roomid: string,
+        content: string,
+        memberid: number,
+    ){
+        let userData: jwtParsed;
+        let flag: boolean = true;
+        try {
+            userData = jwt.verify(token, this.config.get('secret'));
+        } catch (error) {
+            flag = false;
+        } finally {
+            const room = await this.randomRoomRepository.findOne({
+                where: { roomid: roomid },
+            });
+
+            // 잘못된 roomid
+            if (!room) {
+                throw new BadRequestException('Not Exist Room');
+            }
+    
+            const chats = new RoomChat();
+            chats.content = content;
+            chats.room = room;
+            
+            // 로그인 유저일 경우
+            if (flag) {
+                
+                const existUser = await this.userRepository.findOne({
+                    where: {
+                        SnsId: userData.id,
+                        Provider: userData.provider,
+                    },
+                });
+                if (existUser) {
+                    chats.user = existUser;
+                } else {
+                    flag = false;
+                }
+            }
+            
+            // 비로그인 유저일 경우
+            if (!flag) {
+                const existMember = await this.memberRepository.findOne({
+                    where: {
+                        Nick: memberid,
+                        room: room,
+                    },
+                });
+    
+                if (!existMember) {
+                    return new BadRequestException('no member or no user');
+                }
+                chats.member = existMember;
+            }
+    
+            const saveChat = await this.randomRoomChatRepository.save(chats);
+            const chatWithUser = await this.randomRoomChatRepository.findOne({
+                where: { id: saveChat.id },
+                relations: ['user', 'member', 'room'],
+            });
+    
+            // socket.io로 해당 방 사용자에게 전송
+            this.multiGatway.server
+                .to(`/room-${chatWithUser.room.status}-${chatWithUser.room.roomid}`)
+                .emit('message', chatWithUser);
+            
+            return { result: 'success' };
+        }
     }
 }

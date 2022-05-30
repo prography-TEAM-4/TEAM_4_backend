@@ -154,9 +154,6 @@ export class RandomController {
         return this.randomService.enterRoom(roomid, token, nick, imgCode);
     }
 
-    
-
-
     @ApiParam({
         name: 'roomid',
         description: '삭제하려는 방 코드',
@@ -185,5 +182,110 @@ export class RandomController {
       @Param('roomid') roomid: string,
     ) {
       return await this.randomService.removeRandomRoom(roomid);
+    }
+
+    @ApiParam({
+        name: 'roomid',
+        description: '방 코드',
+    })
+    @ApiResponse({
+        description: '랜덤방 채팅 가져오기 성공 (최근 10개의 채팅만 가져옴)',
+        status: 200,
+        schema: {
+            example: {
+                roomChats: [[
+                    {
+                        id: 1,
+                        content: 'hi',
+                        createdAt: '2022-05-23T07:27:16.467Z',
+                        user: null,
+                        member: [{
+                            id: '1',
+                            Nick: 'exampleMember',
+                            all: '2',
+                            createAt: '2022-05-23T07:09:54.678Z',
+                            deleteAt: null,
+                            updateAt: '2022-05-23T07:09:54.678Z'
+                        },]
+                    },
+                    {
+                        id: 2,
+                        content: 'hello',
+                        createdAt: '2022-05-23T07:27:20.467Z',
+                        user: [{
+                            id: '1',
+                            SnsId: 'user@example.com',
+                            Nick: 'exampleUser',
+                            Provider: 'examplePlatform',
+                            point: 0,
+                            all: '1',
+                            createAt: '2022-05-23T07:09:54.678Z',
+                            deleteAt: null,
+                            updateAt: '2022-05-23T07:09:54.678Z'
+                        },],
+                        member: null,
+                    },
+                ]],
+            },
+        },
+    })
+    @ApiOperation({ summary: '랜덤방 채팅 가져오기' })
+    @Get(':roomid/chats')
+    async getRandomRoomChats(
+        @Param('roomid') roomid: string,
+    ) {
+        return await this.randomService.getRandomRoomChats(roomid);
+    }
+    
+    @ApiHeader({
+        name: 'Authorization',
+        description: 'eyJhGcioJ와 같은 accessToken',
+    })
+    @ApiParam({
+        name: 'roomid',
+        description: '방 코드',
+    })
+    @ApiBody({
+        description: '비로그인 유저는 memberId, 로그인 유저는 0',
+        schema: {
+            example: {
+                content: 'hello',
+                memberId: 3,
+            },
+        },
+    })
+    @ApiResponse({
+        description: 'not exist room / no member',
+        status: 400,
+        schema: {
+            example: { 
+                success: false, 
+                code: 404, 
+                data: 'not exist room / no member or no user' },
+        },
+    })
+    @ApiResponse({
+        description: '랜덤방 채팅 생성 성공 (socket으로 chatWithUser 전송)',
+        status: 200,
+        schema: {
+            example: {
+                result: 'success',
+            },
+        },
+    })
+    @ApiOperation({ summary: '랜덤방 채팅 생성하기' })
+    @Post(':roomid/chats')
+    async createFriendsRoomChats(
+        @Headers('Authorization') token: any,
+        @Param('roomid') roomid: string,
+        @Body('content') content: string,
+        @Body('memberId') memberId: number,
+    ) {
+        return await this.randomService.createRandomRoomChats(
+            token,
+            roomid,
+            content,
+            memberId,
+        );
     }
 }
