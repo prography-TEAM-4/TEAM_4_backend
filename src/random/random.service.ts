@@ -160,4 +160,41 @@ export class RandomService {
                 return { playerList, room };
         }
     }
+
+    async removeRandomRoom(roomid: string){
+        try {
+            const destroyRoom = await this.randomRoomRepository.findOne({
+                where: { 
+                    roomid: roomid,
+                    status: 'RANDOM',
+                },
+            });
+      
+            // chat 삭제
+            await this.randomRoomChatRepository.delete({
+                room: destroyRoom,
+            });
+      
+            // member 삭제
+            await this.memberRepository.delete({
+              room: destroyRoom,
+            });
+      
+            // user roomid 값을 null로 변경
+            const users = await this.userRepository.find({
+              where: { room: destroyRoom },
+            });
+            users.forEach(async (user) => {
+              user.room = null;
+              user.all = null;
+              await this.userRepository.save(user);
+            });
+      
+            // 방 삭제
+            await this.randomRoomRepository.delete(destroyRoom);
+            return { result: 'success' };
+          } catch (error) {
+            return { result: 'fail' };
+          }
+    }
 }

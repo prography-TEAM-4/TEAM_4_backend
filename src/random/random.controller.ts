@@ -4,7 +4,8 @@ import {
     Get, 
     Post, 
     Headers, 
-    Param 
+    Param, 
+    Delete
 } from '@nestjs/common';
 import { ApiBody, ApiHeader, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RandomService } from './random.service';
@@ -151,5 +152,38 @@ export class RandomController {
         @Body('imgCode') imgCode: string,
     ){
         return this.randomService.enterRoom(roomid, token, nick, imgCode);
+    }
+
+    
+
+
+    @ApiParam({
+        name: 'roomid',
+        description: '삭제하려는 방 코드',
+    })
+    @ApiResponse({
+        description: '랜덤방 삭제 생성 성공',
+        status: 200,
+        schema: {
+            example: {
+                result: 'success',
+            },
+        },
+    })
+    @ApiResponse({
+        description: '랜덤방 삭제 생성 실패 (roomid 오류)',
+        status: 404,
+        schema: {
+            example: {
+                result: 'fail',
+            },
+        },
+    })
+    @ApiOperation({ summary: '랜덤방 삭제하기' })
+    @Delete(':roomid')
+    async removeFriendsRoomChats(
+      @Param('roomid') roomid: string,
+    ) {
+      return await this.randomService.removeRandomRoom(roomid);
     }
 }
