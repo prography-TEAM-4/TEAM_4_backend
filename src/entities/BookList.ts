@@ -12,7 +12,7 @@ import {
 import { User } from './User';
 
 @Index('id', ['id'], {})
-@Entity({ schema: 'prographydb', name: 'BookLists' })
+@Entity({ schema: 'prographydb', name: 'booklists' })
 export class BookList extends BaseEntity {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;

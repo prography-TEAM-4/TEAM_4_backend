@@ -79,13 +79,13 @@ export class FriendsController {
     status: 200,
     schema: {
       example: {
-        room: [{
-          id: 'id', 
-          roomid: 'a199ead7-4dfc-429a-a62c-84b6039854ac', 
-          host: 'member1', 
-          headCount: '0', 
-          status: 'FRIENDS', 
-        }],
+        room: {
+          id: 'id',
+          roomid: 'a199ead7-4dfc-429a-a62c-84b6039854ac',
+          host: 'member1',
+          headCount: '0',
+          status: 'FRIENDS',
+        },
       },
     },
   })
@@ -179,7 +179,12 @@ export class FriendsController {
     @Body('nick') nick: string,
     @Body('imgCode') imgCode: string,
   ) {
-    return await this.friendsService.getFriendsRoom(roomid, token, nick, imgCode);
+    return await this.friendsService.getFriendsRoom(
+      roomid,
+      token,
+      nick,
+      imgCode,
+    );
   }
 
   @ApiParam({
@@ -229,9 +234,7 @@ export class FriendsController {
   })
   @ApiOperation({ summary: '친구방 채팅 가져오기' })
   @Get(':roomid/chats')
-  async getFriendsRoomChats(
-    @Param('roomid') roomid: string,
-  ) {
+  async getFriendsRoomChats(@Param('roomid') roomid: string) {
     return await this.friendsService.getFriendsRoomChats(roomid);
   }
 
@@ -308,9 +311,7 @@ export class FriendsController {
   })
   @ApiOperation({ summary: '친구방 삭제하기' })
   @Delete(':roomid')
-  async removeFriendsRoomChats(
-    @Param('roomid') roomid: string,
-  ) {
+  async removeFriendsRoomChats(@Param('roomid') roomid: string) {
     return await this.friendsService.removeFriendsRoom(roomid);
   }
 }

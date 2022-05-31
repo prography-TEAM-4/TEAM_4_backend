@@ -15,7 +15,7 @@ import { Room } from './Room';
 import { RoomChat } from './RoomChat';
 
 @Index('id', ['id'], {})
-@Entity({ schema: 'prographydb', name: 'Members' })
+@Entity({ schema: 'prographydb', name: 'members' })
 export class Member extends BaseEntity {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
