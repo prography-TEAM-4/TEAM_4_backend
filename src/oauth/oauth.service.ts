@@ -36,26 +36,29 @@ export class OauthService {
           SnsId: data.id,
         })
         .execute();
+      console.log('db find success');
+      console.log(alreadyExist);
       if (!alreadyExist.length) {
         const newUser = new User();
         newUser.Nick = 'testing';
         (newUser.Provider = 'google'), (newUser.SnsId = data.id);
         await newUser.save();
       }
-      const ourAccessToken = jwt.sign(
-        {
-          id: data.id,
-          provider: 'google',
-          iss: 'pomo',
-          sub: 'pomo jwt',
-          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
-        },
-        this.config.get('secret'),
-      );
-      return { accessToken: ourAccessToken };
+      console.log('db save success');
     } catch (error) {
       throw new NotFoundException('unknown error');
     }
+    const ourAccessToken = jwt.sign(
+      {
+        id: data.id,
+        provider: 'google',
+        iss: 'pomo',
+        sub: 'pomo jwt',
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
+      },
+      this.config.get('secret'),
+    );
+    return { accessToken: ourAccessToken };
   }
 
   async check(token: any) {
