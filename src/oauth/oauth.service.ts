@@ -44,7 +44,6 @@ export class OauthService {
         (newUser.Provider = 'google'), (newUser.SnsId = data.id);
         await newUser.save();
       }
-      console.log(this.config.get('secret'));
       console.log('db save success');
     } catch (error) {
       throw new NotFoundException('unknown error');
@@ -57,14 +56,14 @@ export class OauthService {
         sub: 'pomo jwt',
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
       },
-      this.config.get('secret'),
+      this.config.get('SECRET'),
     );
     return { accessToken: ourAccessToken };
   }
 
   async check(token: any) {
     try {
-      await jwt.verify(token, this.config.get('secret'));
+      await jwt.verify(token, this.config.get('SECRET'));
     } catch (error) {
       throw new UnauthorizedException(`unauthorized error`);
     }
