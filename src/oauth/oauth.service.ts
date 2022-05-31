@@ -44,6 +44,7 @@ export class OauthService {
         (newUser.Provider = 'google'), (newUser.SnsId = data.id);
         await newUser.save();
       }
+      console.log(this.config.get('secret'));
       console.log('db save success');
     } catch (error) {
       throw new NotFoundException('unknown error');
