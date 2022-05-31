@@ -27,7 +27,7 @@ export class UserService {
   async create(createUserDto: CreateBookDto, token: any) {
     let userData: jwtParsed;
     try {
-      userData = jwt.verify(token, this.config.get('secret'));
+      userData = jwt.verify(token, this.config.get('SECRET'));
     } catch (error) {
       throw new UnauthorizedException(`unauthorized error`);
     }
@@ -60,7 +60,7 @@ export class UserService {
   async findAll(token: any) {
     let userData: jwtParsed;
     try {
-      userData = jwt.verify(token, this.config.get('secret'));
+      userData = jwt.verify(token, this.config.get('SECRET'));
     } catch (error) {
       throw new UnauthorizedException(`unauthorized error`);
     }
@@ -83,7 +83,7 @@ export class UserService {
   async findUser(token: any) {
     let userData: jwtParsed;
     try {
-      userData = await jwt.verify(token, this.config.get('secret'));
+      userData = await jwt.verify(token, this.config.get('SECRET'));
     } catch (error) {
       throw new UnauthorizedException(`unauthorized error`);
     }
@@ -132,7 +132,7 @@ export class UserService {
   async patchUser(token: any, body: string) {
     let userData: jwtParsed;
     try {
-      userData = await jwt.verify(token, this.config.get('secret'));
+      userData = await jwt.verify(token, this.config.get('SECRET'));
     } catch (error) {
       throw new UnauthorizedException(`unauthorized error`);
     }
