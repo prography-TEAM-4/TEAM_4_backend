@@ -39,7 +39,7 @@ export class FriendsService {
     let userData: jwtParsed;
     let flag: boolean = true;
     try {
-      userData = jwt.verify(token, this.config.get('secret'));
+      userData = jwt.verify(token, this.config.get('SECRET'));
     } catch (error) {
       //throw new UnauthorizedException(`unauthorized error`);
       flag = false;
@@ -104,7 +104,7 @@ export class FriendsService {
     let flag: boolean = true;
 
     try {
-      userData = jwt.verify(token, this.config.get('secret'));
+      userData = jwt.verify(token, this.config.get('SECRET'));
     } catch (error) {
       flag = false;
     } finally {
@@ -131,13 +131,12 @@ export class FriendsService {
 
           room.headCount += 1;
           await this.friendsRoomRepository.save(room);
-        }
-        else{
+        } else {
           flag = false;
         }
       }
 
-      if(!flag){
+      if (!flag) {
         // 로그인을 하지 않은 유저
         const duplicate_check = await this.memberRepository.findOne({
           where: { Nick: nick },
@@ -170,16 +169,20 @@ export class FriendsService {
           roomid,
         })
         .getMany();
-      
+
       let playerList: Array<Player> = [];
 
       memberList.forEach((member) => {
-        playerList.push(new Player(member.id, member.Nick, member.all, -1, false));
-      })
+        playerList.push(
+          new Player(member.id, member.Nick, member.all, -1, false),
+        );
+      });
 
       userList.forEach((user) => {
-        playerList.push(new Player(user.id, user.Nick, user.all, user.point, true));
-      })
+        playerList.push(
+          new Player(user.id, user.Nick, user.all, user.point, true),
+        );
+      });
 
       return { playerList, room };
     }
@@ -242,7 +245,7 @@ export class FriendsService {
     let userData: jwtParsed;
     let flag: boolean = true;
     try {
-      userData = jwt.verify(token, this.config.get('secret'));
+      userData = jwt.verify(token, this.config.get('SECRET'));
     } catch (error) {
       flag = false;
     } finally {

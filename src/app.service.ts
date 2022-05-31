@@ -10,6 +10,6 @@ export class AppService {
   }
 
   secretTest(): string {
-    return this.config.get('test') || 'there is no secret';
+    return this.config.get('SECRET') || 'there is no secret';
   }
 }
