@@ -12,7 +12,7 @@ import { Member } from './Member';
 import { Room } from './Room';
 import { User } from './User';
 
-@Entity({ schema: 'prographydb', name: 'RoomChats' })
+@Entity({ schema: 'prographydb', name: 'roomchats' })
 export class RoomChat extends BaseEntity {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;

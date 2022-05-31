@@ -54,13 +54,15 @@ export class FriendsController {
     status: 200,
     schema: {
       example: {
-        room: [{
-          id: '1', 
-          roomid: 'a199ead7-4dfc-429a-a62c-84b6039854ac', 
-          host: 'user@example.com', 
-          headCount: '0', 
-          status: 'FRIENDS', 
-        }],
+        room: [
+          {
+            id: '1',
+            roomid: 'a199ead7-4dfc-429a-a62c-84b6039854ac',
+            host: 'user@example.com',
+            headCount: '0',
+            status: 'FRIENDS',
+          },
+        ],
       },
     },
   })
@@ -69,13 +71,13 @@ export class FriendsController {
     status: 200,
     schema: {
       example: {
-        room: [{
-          id: 'id', 
-          roomid: 'a199ead7-4dfc-429a-a62c-84b6039854ac', 
-          host: 'member1', 
-          headCount: '0', 
-          status: 'FRIENDS', 
-        }],
+        room: {
+          id: 'id',
+          roomid: 'a199ead7-4dfc-429a-a62c-84b6039854ac',
+          host: 'member1',
+          headCount: '0',
+          status: 'FRIENDS',
+        },
       },
     },
   })
@@ -113,44 +115,50 @@ export class FriendsController {
     status: 200,
     schema: {
       example: {
-        userList: [[
+        userList: [
+          [
+            {
+              id: '1',
+              SnsId: 'user@example.com',
+              Nick: 'exampleUser',
+              Provider: 'examplePlatform',
+              point: 0,
+              all: 'tjwmqoalx-example-code1',
+              createAt: '2022-05-23T07:09:54.678Z',
+              deleteAt: null,
+              updateAt: '2022-05-23T07:09:54.678Z',
+            },
+          ],
+        ],
+        memberList: [
+          [
+            {
+              id: '1',
+              Nick: 'exampleMember',
+              all: 'tjwmqoalx-example-code2',
+              createAt: '2022-05-23T07:09:54.678Z',
+              deleteAt: null,
+              updateAt: '2022-05-23T07:09:54.678Z',
+            },
+            {
+              id: '5',
+              Nick: 'exampleMember',
+              all: 'tjwmqoalx-example-code3',
+              createAt: '2022-05-23T07:10:54.678Z',
+              deleteAt: null,
+              updateAt: '2022-05-23T07:10:54.678Z',
+            },
+          ],
+        ],
+        room: [
           {
             id: '1',
-            SnsId: 'user@example.com',
-            Nick: 'exampleUser',
-            Provider: 'examplePlatform',
-            point: 0,
-            all: 'tjwmqoalx-example-code1',
-            createAt: '2022-05-23T07:09:54.678Z',
-            deleteAt: null,
-            updateAt: '2022-05-23T07:09:54.678Z'
+            roomid: 'a199ead7-4dfc-429a-a62c-84b6039854ac',
+            host: 'host',
+            headCount: '3',
+            status: 'FRIENDS',
           },
-        ]],
-        memberList: [[
-          {
-            id: '1',
-            Nick: 'exampleMember',
-            all: 'tjwmqoalx-example-code2',
-            createAt: '2022-05-23T07:09:54.678Z',
-            deleteAt: null,
-            updateAt: '2022-05-23T07:09:54.678Z'
-          },
-          {
-            id: '5',
-            Nick: 'exampleMember',
-            all: 'tjwmqoalx-example-code3',
-            createAt: '2022-05-23T07:10:54.678Z',
-            deleteAt: null,
-            updateAt: '2022-05-23T07:10:54.678Z'
-          }
-        ]],
-        room: [{ 
-          id: '1',
-          roomid: 'a199ead7-4dfc-429a-a62c-84b6039854ac', 
-          host: 'host', 
-          headCount: '3', 
-          status: 'FRIENDS', 
-        }],
+        ],
       },
     },
   })
@@ -162,7 +170,12 @@ export class FriendsController {
     @Body('nick') nick: string,
     @Body('imgCode') imgCode: string,
   ) {
-    return await this.friendsService.getFriendsRoom(roomid, token, nick, imgCode);
+    return await this.friendsService.getFriendsRoom(
+      roomid,
+      token,
+      nick,
+      imgCode,
+    );
   }
 
   @ApiParam({
@@ -174,47 +187,51 @@ export class FriendsController {
     status: 200,
     schema: {
       example: {
-        roomChats: [[
-          {
-            id: 1,
-            content: 'hi',
-            createdAt: '2022-05-23T07:27:16.467Z',
-            user: null,
-            member: [{
-              id: '1',
-              Nick: 'exampleMember',
-              all: 'tjwmqoalx-example-code2',
-              createAt: '2022-05-23T07:09:54.678Z',
-              deleteAt: null,
-              updateAt: '2022-05-23T07:09:54.678Z'
-            },]
-          },
-          {
-            id: 2,
-            content: 'hello',
-            createdAt: '2022-05-23T07:27:20.467Z',
-            user: [{
-              id: '1',
-              SnsId: 'user@example.com',
-              Nick: 'exampleUser',
-              Provider: 'examplePlatform',
-              point: 0,
-              all: 'tjwmqoalx-example-code1',
-              createAt: '2022-05-23T07:09:54.678Z',
-              deleteAt: null,
-              updateAt: '2022-05-23T07:09:54.678Z'
-            },],
-            member: null,
-          },
-        ]],
+        roomChats: [
+          [
+            {
+              id: 1,
+              content: 'hi',
+              createdAt: '2022-05-23T07:27:16.467Z',
+              user: null,
+              member: [
+                {
+                  id: '1',
+                  Nick: 'exampleMember',
+                  all: 'tjwmqoalx-example-code2',
+                  createAt: '2022-05-23T07:09:54.678Z',
+                  deleteAt: null,
+                  updateAt: '2022-05-23T07:09:54.678Z',
+                },
+              ],
+            },
+            {
+              id: 2,
+              content: 'hello',
+              createdAt: '2022-05-23T07:27:20.467Z',
+              user: [
+                {
+                  id: '1',
+                  SnsId: 'user@example.com',
+                  Nick: 'exampleUser',
+                  Provider: 'examplePlatform',
+                  point: 0,
+                  all: 'tjwmqoalx-example-code1',
+                  createAt: '2022-05-23T07:09:54.678Z',
+                  deleteAt: null,
+                  updateAt: '2022-05-23T07:09:54.678Z',
+                },
+              ],
+              member: null,
+            },
+          ],
+        ],
       },
     },
   })
   @ApiOperation({ summary: '친구방 채팅 가져오기' })
   @Get(':roomid/chats')
-  async getFriendsRoomChats(
-    @Param('roomid') roomid: string,
-  ) {
+  async getFriendsRoomChats(@Param('roomid') roomid: string) {
     return await this.friendsService.getFriendsRoomChats(roomid);
   }
 
@@ -291,9 +308,7 @@ export class FriendsController {
   })
   @ApiOperation({ summary: '친구방 삭제하기' })
   @Delete(':roomid')
-  async removeFriendsRoomChats(
-    @Param('roomid') roomid: string,
-  ) {
+  async removeFriendsRoomChats(@Param('roomid') roomid: string) {
     return await this.friendsService.removeFriendsRoom(roomid);
   }
 }
