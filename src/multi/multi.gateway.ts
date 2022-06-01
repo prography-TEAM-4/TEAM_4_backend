@@ -14,7 +14,7 @@ import { ConnectedUsers } from './connectedUsers';
 //@WebSocketGateway({ namespace: /\/room-.+/ })
 @WebSocketGateway({
   namespace: /\/room-.+/,
-  transports: ['websocket'],
+  transports: ['polling', 'websocket'],
   cors: {
     origin: '*',
     methods: ['GET', 'POST'],
