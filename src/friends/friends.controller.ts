@@ -251,7 +251,7 @@ export class FriendsController {
     schema: {
       example: {
         content: 'hello',
-        memberId: 3,
+        memberId: 'example',
       },
     },
   })
@@ -277,7 +277,7 @@ export class FriendsController {
     @Headers('Authorization') token: any,
     @Param('roomid') roomid: string,
     @Body('content') content: string,
-    @Body('memberId') memberId: number,
+    @Body('memberId') memberId: string,
   ) {
     return await this.friendsService.creatFriendsRoomChats(
       token,
