@@ -240,7 +240,7 @@ export class FriendsService {
     token: any,
     roomid: string,
     content: string,
-    memberid: number,
+    memberid: string,
   ) {
     let userData: jwtParsed;
     let flag: boolean = true;
