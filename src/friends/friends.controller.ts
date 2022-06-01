@@ -277,13 +277,13 @@ export class FriendsController {
     @Headers('Authorization') token: any,
     @Param('roomid') roomid: string,
     @Body('content') content: string,
-    @Body('memberId') memberId: string,
+    @Body('memberId') nick: string,
   ) {
     return await this.friendsService.creatFriendsRoomChats(
       token,
       roomid,
       content,
-      memberId,
+      nick,
     );
   }
 

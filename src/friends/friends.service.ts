@@ -240,7 +240,7 @@ export class FriendsService {
     token: any,
     roomid: string,
     content: string,
-    memberid: string,
+    nick: string,
   ) {
     let userData: jwtParsed;
     let flag: boolean = true;
@@ -279,7 +279,7 @@ export class FriendsService {
       if (!flag) {
         const existMember = await this.memberRepository.findOne({
           where: {
-            Nick: memberid,
+            Nick: nick,
             room: room,
           },
         });
