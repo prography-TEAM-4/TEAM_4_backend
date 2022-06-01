@@ -53,6 +53,17 @@ export class MultiGateway
       console.log(`socket ${id} has joined room ${room}`);
     });
   }
+
+  @SubscribeMessage('leave')
+  handleLeave(
+    @MessageBody() data: { Nick: string, logined: boolean, roomid: string }, 
+    @ConnectedSocket() client: Socket,
+  ){
+    const Nick: string = data.Nick;
+    const logined: boolean = data.logined;
+    client.to(`/room-${client.nsp.name}-${data.roomid}`).emit('leave', { Nick, logined });
+  }
+
   @SubscribeMessage('start')
   handleStart(
     @MessageBody() roomid: string,
