@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Headers, Post, Redirect } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Post,
+  Query,
+  Redirect,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AccessToken } from './dto/oauth.dto';
@@ -73,5 +81,19 @@ export class OauthController {
   @Get('check')
   async check(@Headers('Authorization') token: any) {
     return this.oauthService.check(token);
+  }
+
+  @ApiOperation({
+    summary: 'naver login 페이지로 이동',
+  })
+  @Redirect(
+    `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=t4SED16n0Lr9DdTRtV3F&redirect_uri=http://localhost:4000/oauth/naver/callback&state=abcdef`,
+  )
+  @Get('/naver')
+  naverRedirect() {}
+
+  @Get('naver/callback')
+  async naverLogin(@Query('code') code: string) {
+    return await this.oauthService.naverLogin(code);
   }
 }
