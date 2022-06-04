@@ -39,14 +39,13 @@ export class OauthController {
   @ApiOperation({
     summary: `로그인 성공시 ${process.env.GOOGLE_CALLBACK}/oauth?accessToken=토큰값 으로 redirect`,
   })
-  @Post('/google')
-  async googleCheck(@Body() accessToken: AccessToken, @Res() res: Response) {
-    return await this.oauthService.googleAccess(accessToken, res);
+  @Get('/google/callback')
+  async googleCheck(@Query('code') code: string, @Res() res: Response) {
+    return await this.oauthService.googleAccess(code, res);
   }
 
   @ApiOperation({
-    summary:
-      '구글 로그인 페이지로 이동합니다 redirect_uri:"localhost:3000/oauth/google/callback"',
+    summary: `구글 로그인 페이지로 이동합니다 redirect_uri:${process.env.GOOGLE_REDIRECT}`,
   })
   @Redirect(
     `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENTID}&response_type=token&redirect_uri=${process.env.GOOGLE_REDIRECT}&scope=https://www.googleapis.com/auth/userinfo.email`,
@@ -97,10 +96,9 @@ export class OauthController {
     return await this.oauthService.naverLogin(code, res);
   }
 
-  @UseInterceptors(RedirectInterceptor)
   @Get('/test')
   test() {
-    return { test: 'asdf' };
+    return 'asdf';
   }
 
   @Redirect(
