@@ -10,8 +10,6 @@ import { UserModule } from './user/user.module';
 import { ModeModule } from './mode/mode.module';
 import { RandomModule } from './random/random.module';
 import { FriendsModule } from './friends/friends.module';
-import { TestingController } from './testing/testing.controller';
-import { TestingService } from './testing/testing.service';
 import * as ormconfig from '../ormconfig';
 @Module({
   imports: [
@@ -24,7 +22,7 @@ import * as ormconfig from '../ormconfig';
     RandomModule,
     FriendsModule,
   ],
-  controllers: [AppController, TestingController],
-  providers: [AppService, TestingService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

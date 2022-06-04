@@ -7,14 +7,6 @@ import { HttpExceptionFilter } from './http-exception.filter';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
-// (async () => {
-//   await createDatabase({
-//     ifNotExist: true,
-//     charset: 'utf8mb4_general_ci',
-//     characterSet: 'utf8mb4',
-//   });
-//   process.exit(0);
-// })();
 declare const module: any;
 const port = process.env.PORT || 80;
 async function bootstrap() {
