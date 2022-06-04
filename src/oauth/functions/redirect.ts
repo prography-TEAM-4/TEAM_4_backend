@@ -26,7 +26,7 @@ export class RedirectInterceptor implements NestInterceptor {
       }),
     );
 
-    return of('testing');
+    return of('testing asdf');
     // return res.redirect('http://google.com');
   }
   //   intercept(
