@@ -81,7 +81,7 @@ export class OauthController {
   }
 
   @ApiOperation({
-    summary: 'naver login 페이지로 이동',
+    summary: `네이버 로그인 페이지 https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${process.env.NAVER_CLIENTID}&redirect_uri=${process.env.NAVER_REDIRECT}&state=abcdef`,
   })
   @Redirect(
     `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${process.env.NAVER_CLIENTID}&redirect_uri=${process.env.NAVER_REDIRECT}&state=abcdef`,
@@ -106,6 +106,9 @@ export class OauthController {
   @Redirect(
     `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.KAKAO_CLIENTID}&redirect_uri=${process.env.KAKAO_REDIRECT}&response_type=code`,
   )
+  @ApiOperation({
+    summary: `카카오 로그인 페이지 https://kauth.kakao.com/oauth/authorize?client_id=${process.env.KAKAO_CLIENTID}&redirect_uri=${process.env.KAKAO_REDIRECT}&response_type=code`,
+  })
   @Get('/kakao')
   kakaoPage() {}
 
