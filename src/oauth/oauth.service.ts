@@ -39,6 +39,8 @@ export class OauthService {
           SnsId: data.id,
         })
         .execute();
+      console.log('db find success');
+      console.log(alreadyExist);
       if (!alreadyExist.length) {
         const newUser = new User();
         newUser.Nick = 'testing';

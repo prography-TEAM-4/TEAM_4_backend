@@ -102,7 +102,7 @@ export class FriendsService {
   ) {
     let userData: jwtParsed;
     let flag: boolean = true;
-
+    let enterUser: Player;
     try {
       userData = jwt.verify(token, this.config.get('SECRET'));
     } catch (error) {
@@ -131,6 +131,9 @@ export class FriendsService {
 
           room.headCount += 1;
           await this.friendsRoomRepository.save(room);
+          enterUser = new Player(
+            existUser.id, existUser.Nick, existUser.all, existUser.point, true,
+          );
         } else {
           flag = false;
         }
@@ -151,6 +154,9 @@ export class FriendsService {
         member.room = room;
         member.all = imgCode;
         await this.memberRepository.save(member);
+        enterUser = new Player(
+          member.id, member.Nick, member.all, -1, false,
+        );
       }
 
       const memberList = await this.memberRepository
@@ -183,7 +189,7 @@ export class FriendsService {
           new Player(user.id, user.Nick, user.all, user.point, true),
         );
       });
-
+      this.multiGatway.server.to(`/room-${room.status}-${room.roomid}`).emit('join', enterUser);
       return { playerList, room };
     }
   }
@@ -240,7 +246,7 @@ export class FriendsService {
     token: any,
     roomid: string,
     content: string,
-    memberid: number,
+    nick: string,
   ) {
     let userData: jwtParsed;
     let flag: boolean = true;
@@ -279,7 +285,7 @@ export class FriendsService {
       if (!flag) {
         const existMember = await this.memberRepository.findOne({
           where: {
-            Nick: memberid,
+            Nick: nick,
             room: room,
           },
         });

@@ -14,7 +14,7 @@ import { ConnectedUsers } from './connectedUsers';
 //@WebSocketGateway({ namespace: /\/room-.+/ })
 @WebSocketGateway({
   namespace: /\/room-.+/,
-  transports: ['websocket'],
+  transports: ['polling', 'websocket'],
   cors: {
     origin: '*',
     methods: ['GET', 'POST'],
@@ -53,6 +53,17 @@ export class MultiGateway
       console.log(`socket ${id} has joined room ${room}`);
     });
   }
+
+  @SubscribeMessage('leave')
+  handleLeave(
+    @MessageBody() data: { Nick: string, logined: boolean, roomid: string }, 
+    @ConnectedSocket() client: Socket,
+  ){
+    const Nick: string = data.Nick;
+    const logined: boolean = data.logined;
+    client.to(`/room-${client.nsp.name}-${data.roomid}`).emit('leave', { Nick, logined });
+  }
+
   @SubscribeMessage('start')
   handleStart(
     @MessageBody() roomid: string,
