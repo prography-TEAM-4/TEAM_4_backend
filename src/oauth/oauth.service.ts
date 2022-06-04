@@ -21,7 +21,7 @@ export class OauthService {
     private readonly config: ConfigService,
   ) {}
 
-  async googleAccess({ accessToken }: AccessToken, res: Response) {
+  async googleAccess(accessToken: string, res: Response) {
     let data: GoogleData | undefined;
     try {
       const tempData = await axios.get(
@@ -60,9 +60,11 @@ export class OauthService {
       },
       this.config.get('SECRET'),
     );
-    return res.redirect(
-      `${this.config.get('GOOGLE_CALLBACK')}?accessToken=${ourAccessToken}`,
-    );
+    return res
+      .status(302)
+      .redirect(
+        `${this.config.get('GOOGLE_CALLBACK')}?accessToken=${ourAccessToken}`,
+      );
   }
 
   async check(token: any) {
@@ -123,9 +125,11 @@ export class OauthService {
       },
       this.config.get('SECRET'),
     );
-    return res.redirect(
-      `${this.config.get('NAVER_CALLBACK')}?accessToken=${ourAccessToken}`,
-    );
+    return res
+      .status(302)
+      .redirect(
+        `${this.config.get('NAVER_CALLBACK')}?accessToken=${ourAccessToken}`,
+      );
   }
   async kakaoLogin(kakaoCode: string, res: Response) {
     let userData: any;
@@ -179,8 +183,10 @@ export class OauthService {
       },
       this.config.get('SECRET'),
     );
-    return res.redirect(
-      `${this.config.get('KAKAO_CALLBACK')}?accessToken=${ourAccessToken}`,
-    );
+    return res
+      .status(302)
+      .redirect(
+        `${this.config.get('KAKAO_CALLBACK')}?accessToken=${ourAccessToken}`,
+      );
   }
 }
