@@ -30,6 +30,7 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
 
 env:
   AWS_REGION: ap-northeast-2 # set this to your preferred AWS region, e.g. us-west-1
@@ -89,6 +90,15 @@ jobs:
           echo GOOGLE_CLIENTID=${{ secrets.GOOGLE_CLIENTID }} >> .env
           echo GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} >> .env
           echo GOOGLE_REDIRECT=${{ secrets.GOOGLE_REDIRECT }} >> .env
+          echo GOOGLE_CALLBACK=${{ secrets.GOOGLE_CALLBACK }} >> .env
+          echo KAKAO_CLIENTID=${{ secrets.KAKAO_CLIENTID }} >> .env
+          echo KAKAO_SECRET=${{ secrets.KAKAO_SECRET }} >> .env
+          echo KAKAO_REDIRECT=${{ secrets.KAKAO_REDIRECT }} >> .env
+          echo KAKAO_CALLBACK=${{ secrets.KAKAO_CALLBACK }} >> .env
+          echo NAVER_CLIENTID=${{ secrets.NAVER_CLIENTID }} >> .env
+          echo NAVER_SECRET=${{ secrets.NAVER_SECRET }} >> .env
+          echo NAVER_REDIRECT=${{ secrets.NAVER_REDIRECT }} >> .env
+          echo NAVER_CALLBACK=${{ secrets.NAVER_CALLBACK }} >> .env
           cat .env
 
       - name: Build, tag, and push image to Amazon ECR
