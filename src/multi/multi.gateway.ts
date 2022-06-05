@@ -32,12 +32,6 @@ export class MultiGateway
 
   afterInit(server: Server) {
     console.log('WebSockets Init');
-    const friends_namespace = this.server.of('room-FRIENDS');
-    friends_namespace.adapter.on('leave-room', (room, id) => {
-      console.log('leave-room')
-      console.log('room', room)
-      console.log('id', id)
-    })
   }
 
   // 이벤트 발생 시
@@ -55,6 +49,12 @@ export class MultiGateway
     );
     console.log('join', client.nsp.name, data.roomid);
     client.join(`${client.nsp.name}-${data.roomid}`);
+
+    newNamespace.adapter.once('leave-room', (room, id) => {
+      console.log('leave-room')
+      console.log('room', room)
+      console.log('id', id)
+    })
   }
 
   @SubscribeMessage('leave-room')
@@ -92,10 +92,5 @@ export class MultiGateway
     delete ConnectedUsers[client.nsp.name][client.id];
     console.log(ConnectedUsers);
     nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
-    nsp.adapter.on('leave-room', (room, id) => {
-      console.log('room', room)
-      console.log('id', id)
-    })
-    console.log(`socket ${client.id} has leaved room ${client.data.roomid}`);
   }
 }
