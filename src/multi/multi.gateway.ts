@@ -61,6 +61,19 @@ export class MultiGateway
     //client.to(`/room-${client.nsp.name}-${data.roomid}`).emit('leave', { Nick, logined });
   }
 
+
+  @SubscribeMessage('disconnecting')
+  handleDisconnecting(
+    @ConnectedSocket() client: Socket,
+  ){
+    for (const room of client.rooms) {
+      console.log('room:',room)
+    }
+    console.log('client.id',client.id)
+    console.log('client.data.id: ',client.data.id)
+
+  }
+
   @SubscribeMessage('start')
   handleStart(
     @MessageBody() roomid: string,
