@@ -49,6 +49,10 @@ export class MultiGateway
     );
     console.log('join', client.nsp.name, data.roomid);
     client.join(`${client.nsp.name}-${data.roomid}`);
+    newNamespace.adapter.on('leave-room', (room, id) => {
+      console.log('room', room)
+      console.log('id', id)
+    })
   }
 
   @SubscribeMessage('leave-room')
@@ -66,6 +70,7 @@ export class MultiGateway
   handleDisconnecting(
     @ConnectedSocket() client: Socket,
   ){
+    console.log('rooms', client.rooms)
     for (const room of client.rooms) {
       console.log('room:',room)
     }
@@ -99,7 +104,10 @@ export class MultiGateway
     delete ConnectedUsers[client.nsp.name][client.id];
     console.log(ConnectedUsers);
     nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
-
+    nsp.adapter.on('leave-room', (room, id) => {
+      console.log('room', room)
+      console.log('id', id)
+    })
     console.log(`socket ${client.id} has leaved room ${client.data.roomid}`);
   }
 }
