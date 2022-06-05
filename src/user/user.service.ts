@@ -15,6 +15,7 @@ import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 import { jwtParsed } from './dto/userdata.dto';
 import { BookList } from 'src/entities/BookList';
+import { getRandomNickname } from './utilities/user.utility';
 
 @Injectable()
 export class UserService {
@@ -111,6 +112,7 @@ export class UserService {
     return this.config.get('DB_USERNAME') || 'no secret is here';
   }
 
+
   async randomNick() {
     const rand = Math.floor(Math.random() * 100);
     const ImgCode = Math.floor(Math.random() * 6) + 1;
@@ -123,8 +125,9 @@ export class UserService {
       tail: ImgCode,
       all: ImgCode,
     };
+    
     return {
-      Nick: '테스팅용 랜덤' + rand,
+      Nick: getRandomNickname(ImgCode),
       code,
     };
   }
