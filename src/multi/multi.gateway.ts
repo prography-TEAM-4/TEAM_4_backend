@@ -32,6 +32,12 @@ export class MultiGateway
 
   afterInit(server: Server) {
     console.log('WebSockets Init');
+    const friends_namespace = this.server.of('room-FRIENDS');
+    friends_namespace.adapter.on('leave-room', (room, id) => {
+      console.log('leave-room')
+      console.log('room', room)
+      console.log('id', id)
+    })
   }
 
   // 이벤트 발생 시
@@ -49,10 +55,6 @@ export class MultiGateway
     );
     console.log('join', client.nsp.name, data.roomid);
     client.join(`${client.nsp.name}-${data.roomid}`);
-    newNamespace.adapter.on('leave-room', (room, id) => {
-      console.log('room', room)
-      console.log('id', id)
-    })
   }
 
   @SubscribeMessage('leave-room')
@@ -63,20 +65,6 @@ export class MultiGateway
     console.log(`socket ${data.id} has leaved room ${data.room}`);
     console.log(`socket ${client.id} has leaved room ${client.data.roomid}`);
     //client.to(`/room-${client.nsp.name}-${data.roomid}`).emit('leave', { Nick, logined });
-  }
-
-
-  @SubscribeMessage('disconnecting')
-  handleDisconnecting(
-    @ConnectedSocket() client: Socket,
-  ){
-    console.log('rooms', client.rooms)
-    for (const room of client.rooms) {
-      console.log('room:',room)
-    }
-    console.log('client.id',client.id)
-    console.log('client.data.id: ',client.data.id)
-
   }
 
   @SubscribeMessage('start')
