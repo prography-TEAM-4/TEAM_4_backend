@@ -1,9 +1,6 @@
 import {
   BadRequestException,
-  HttpException,
-  HttpStatus,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from 'src/entities/Room';
@@ -12,7 +9,6 @@ import { User } from 'src/entities/User';
 import { MultiGateway } from 'src/multi/multi.gateway';
 import { jwtParsed } from 'src/user/dto/userdata.dto';
 import { Repository } from 'typeorm';
-import { CreateFriendsRoomDto } from './dto/friends-create.dto';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { Member } from 'src/entities/Member';
@@ -259,8 +255,8 @@ export class FriendsService {
         where: { roomid: roomid },
       });
       if (!room) {
-        console.log('없는 방');
-        return new HttpException('not exist room', HttpStatus.NOT_FOUND);
+        console.log('no Exist Room');
+        return new BadRequestException('Not Exist Room');
       }
 
       const chats = new RoomChat();
@@ -291,7 +287,7 @@ export class FriendsService {
         });
 
         if (!existMember) {
-          return new HttpException('no member', HttpStatus.NOT_FOUND);
+          return new BadRequestException('no member');
         }
         chats.member = existMember;
       }
@@ -308,9 +304,7 @@ export class FriendsService {
       this.multiGatway.server
         .to(`/room-${chatWithUser.room.status}-${chatWithUser.room.roomid}`)
         .emit('message', chatWithUser);
-      console.log(
-        `/room-${chatWithUser.room.status}-${chatWithUser.room.roomid}`,
-      );
+
       return { result: 'success' };
     }
   }
