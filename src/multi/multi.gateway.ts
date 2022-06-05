@@ -49,22 +49,34 @@ export class MultiGateway
     );
     console.log('join', client.nsp.name, data.roomid);
     client.join(`${client.nsp.name}-${data.roomid}`);
-    this.server.of(`${client.nsp.name}`).on('join-room', (room, id) => {
-      console.log(`socket ${id} has joined room ${room}`);
-    });
-    this.server.of(`${client.nsp.name}`).on('leave-room', (room, id) => {
-      console.log(`socket ${id} has leaved room ${room}`);
-    });
+    newNamespace.adapter.on('leave-room', (room, id) => {
+      console.log('room', room)
+      console.log('id', id)
+    })
   }
 
-  @SubscribeMessage('leave')
+  @SubscribeMessage('leave-room')
   handleLeave(
-    @MessageBody() data: { Nick: string, logined: boolean, roomid: string }, 
+    @MessageBody() data: { room: any, id: any }, 
     @ConnectedSocket() client: Socket,
   ){
-    const Nick: string = data.Nick;
-    const logined: boolean = data.logined;
-    client.to(`/room-${client.nsp.name}-${data.roomid}`).emit('leave', { Nick, logined });
+    console.log(`socket ${data.id} has leaved room ${data.room}`);
+    console.log(`socket ${client.id} has leaved room ${client.data.roomid}`);
+    //client.to(`/room-${client.nsp.name}-${data.roomid}`).emit('leave', { Nick, logined });
+  }
+
+
+  @SubscribeMessage('disconnecting')
+  handleDisconnecting(
+    @ConnectedSocket() client: Socket,
+  ){
+    console.log('rooms', client.rooms)
+    for (const room of client.rooms) {
+      console.log('room:',room)
+    }
+    console.log('client.id',client.id)
+    console.log('client.data.id: ',client.data.id)
+
   }
 
   @SubscribeMessage('start')
@@ -92,9 +104,10 @@ export class MultiGateway
     delete ConnectedUsers[client.nsp.name][client.id];
     console.log(ConnectedUsers);
     nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
-    console.log(client.rooms);
-    this.server.of(`${client.nsp.name}`).on('leave-room', (room, id) => {
-      console.log(`socket ${id} has leaved room ${room}`);
-    });
+    nsp.adapter.on('leave-room', (room, id) => {
+      console.log('room', room)
+      console.log('id', id)
+    })
+    console.log(`socket ${client.id} has leaved room ${client.data.roomid}`);
   }
 }
