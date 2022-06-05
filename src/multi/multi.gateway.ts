@@ -49,8 +49,11 @@ export class MultiGateway
     );
     console.log('join', client.nsp.name, data.roomid);
     client.join(`${client.nsp.name}-${data.roomid}`);
-    this.server.sockets.adapter.on('join-room', (room, id) => {
+    this.server.of(`${client.nsp.name}`).on('join-room', (room, id) => {
       console.log(`socket ${id} has joined room ${room}`);
+    });
+    this.server.of(`${client.nsp.name}`).on('leave-room', (room, id) => {
+      console.log(`socket ${id} has leaved room ${room}`);
     });
   }
 
@@ -89,8 +92,8 @@ export class MultiGateway
     delete ConnectedUsers[client.nsp.name][client.id];
     console.log(ConnectedUsers);
     nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
-
-    this.server.on('leave-room', (room, id) => {
+    console.log(client.rooms);
+    this.server.of(`${client.nsp.name}`).on('leave-room', (room, id) => {
       console.log(`socket ${id} has leaved room ${room}`);
     });
   }
