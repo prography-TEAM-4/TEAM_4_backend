@@ -53,6 +53,7 @@ export class MultiGateway
     newNamespace.adapter.once('leave-room', (room, id) => {
       console.log('leave-room')
       console.log('room', room)
+      console.dir(room)
       console.log('id', id)
     })
   }
