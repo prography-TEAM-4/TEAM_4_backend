@@ -90,7 +90,7 @@ export class MultiGateway
     console.log(ConnectedUsers);
     nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
 
-    this.server.sockets.adapter.on('leave-room', (room, id) => {
+    this.server.on('leave-room', (room, id) => {
       console.log(`socket ${id} has leaved room ${room}`);
     });
   }
