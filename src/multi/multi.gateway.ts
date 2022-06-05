@@ -49,12 +49,14 @@ export class MultiGateway
     );
     console.log('join', client.nsp.name, data.roomid);
     client.join(`${client.nsp.name}-${data.roomid}`);
-    this.server.of(`${client.nsp.name}`).on('join-room', (room, id) => {
+    this.server.of(`${client.nsp.name}`).adapter.on('join-room', (room, id) => {
       console.log(`socket ${id} has joined room ${room}`);
     });
-    this.server.of(`${client.nsp.name}`).on('leave-room', (room, id) => {
+    this.server.of(`${client.nsp.name}`).adapter.on('leave-room', (room, id) => {
       console.log(`socket ${id} has leaved room ${room}`);
     });
+
+    console.log(client.rooms);
   }
 
   @SubscribeMessage('leave')
@@ -93,8 +95,11 @@ export class MultiGateway
     console.log(ConnectedUsers);
     nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
     console.log(client.rooms);
-    this.server.of(`${client.nsp.name}`).on('leave-room', (room, id) => {
+    
+    this.server.of(`${client.nsp.name}`).adapter.on('leave-room', (room, id) => {
       console.log(`socket ${id} has leaved room ${room}`);
     });
+    
+
   }
 }
