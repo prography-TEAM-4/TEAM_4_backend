@@ -84,7 +84,7 @@ export class MultiGateway
 
   handleDisconnect(client: Socket) {
     console.log('Disconnected', client.nsp.name);
-
+    
     const nsp = client.nsp;
     delete ConnectedUsers[client.nsp.name][client.id];
     console.log(ConnectedUsers);
