@@ -44,12 +44,17 @@ export class MultiGateway
     console.log('enter', newNamespace);
     console.log('join', client.nsp.name, data.roomid);
 
+    ConnectedUsers[client.nsp.name][client.id] = data.nickname;
+    newNamespace.emit('ConnectedUsers', Object.values(ConnectedUsers[client.nsp.name]));
+
     client.data.roomid = data.roomid;
     client.data.nickname = data.nickname;
     client.data.logined = data.logined;  
 
     client.join(`${client.nsp.name}-${data.roomid}`);
-
+    this.server.sockets.adapter.on("join-room", (room, id) => {
+      console.log(`socket ${id} has joined room ${room}`);
+    })
     // newNamespace.adapter.once('leave-room', (room, id) => {
     //   console.log('leave-room')
     //   console.log('room', room)
@@ -89,13 +94,14 @@ export class MultiGateway
   handleDisconnect(client: Socket) {
     console.log('Disconnected', client.nsp.name);
     
-    const nsp = client.nsp.name;
-    //delete ConnectedUsers[client.nsp.name][client.id];
-    console.log(`client ${client.data.nickname} leaved ${nsp}-${client.data.roomid}`);
-    //nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
-    this.server.to(`${nsp}-${client.data.roomid}`).emit('leave', { 
+    const nspName = client.nsp.name;
+    const nsp = client.nsp;
+    delete ConnectedUsers[client.nsp.name][client.id];
+    console.log(`client ${client.data.nickname} leaved ${nspName}-${client.data.roomid}`);
+    nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
+    this.server.to(`${nspName}-${client.data.roomid}`).emit('leave', { 
       data: { 
-        nickname: client.data.nick, 
+        nickname: client.data.nickname, 
         logined: client.data.logined,
       } 
     });
