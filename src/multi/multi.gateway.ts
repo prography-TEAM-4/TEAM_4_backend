@@ -44,6 +44,9 @@ export class MultiGateway
     console.log('enter', newNamespace);
     console.log('join', client.nsp.name, data.roomid);
 
+    ConnectedUsers[client.nsp.name][client.id] = data.nickname;
+    newNamespace.emit('ConnectedUsers', Object.values(ConnectedUsers[client.nsp.name]));
+    
     client.data.roomid = data.roomid;
     client.data.nickname = data.nickname;
     client.data.logined = data.logined;  
@@ -89,13 +92,14 @@ export class MultiGateway
   handleDisconnect(client: Socket) {
     console.log('Disconnected', client.nsp.name);
     
-    const nsp = client.nsp.name;
-    //delete ConnectedUsers[client.nsp.name][client.id];
-    console.log(`client ${client.data.nickname} leaved ${nsp}-${client.data.roomid}`);
-    //nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
-    this.server.to(`${nsp}-${client.data.roomid}`).emit('leave', { 
+    const nspName = client.nsp.name;
+    const nsp = client.nsp;
+    delete ConnectedUsers[client.nsp.name][client.id];
+    console.log(`client ${client.data.nickname} leaved ${nspName}-${client.data.roomid}`);
+    nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
+    this.server.to(`${nspName}-${client.data.roomid}`).emit('leave', { 
       data: { 
-        nickname: client.data.nick, 
+        nickname: client.data.nickname, 
         logined: client.data.logined,
       } 
     });
