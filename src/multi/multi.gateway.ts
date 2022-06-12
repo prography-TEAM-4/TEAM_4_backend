@@ -46,13 +46,15 @@ export class MultiGateway
 
     ConnectedUsers[client.nsp.name][client.id] = data.nickname;
     newNamespace.emit('ConnectedUsers', Object.values(ConnectedUsers[client.nsp.name]));
-    
+
     client.data.roomid = data.roomid;
     client.data.nickname = data.nickname;
     client.data.logined = data.logined;  
 
     client.join(`${client.nsp.name}-${data.roomid}`);
-
+    this.server.sockets.adapter.on("join-room", (room, id) => {
+      console.log(`socket ${id} has joined room ${room}`);
+    })
     // newNamespace.adapter.once('leave-room', (room, id) => {
     //   console.log('leave-room')
     //   console.log('room', room)
