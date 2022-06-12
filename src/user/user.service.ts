@@ -112,7 +112,6 @@ export class UserService {
     return this.config.get('DB_USERNAME') || 'no secret is here';
   }
 
-
   async randomNick() {
     const rand = Math.floor(Math.random() * 100);
     const ImgCode = Math.floor(Math.random() * 6) + 1;
@@ -125,10 +124,14 @@ export class UserService {
       tail: ImgCode,
       all: ImgCode,
     };
-    
+    const icons = {
+      arrow: Math.floor(Math.random() * 6) + 1,
+    };
+
     return {
       Nick: getRandomNickname(ImgCode),
       code,
+      icons,
     };
   }
 
