@@ -54,8 +54,6 @@ export class MultiService {
                     where: { Nick: nick }
                 });
                 this.handlException(room, player);
-                player.room = null;
-                await this.memberRepository.save(player);
 
                 if(player.nick === room.host){
                     flag = true;
@@ -68,6 +66,7 @@ export class MultiService {
                     },
                 });
                 this.handleRoomchat(roomChats, player, null);
+                await this.memberRepository.remove(player);
             }
             room.headCount--;
 
