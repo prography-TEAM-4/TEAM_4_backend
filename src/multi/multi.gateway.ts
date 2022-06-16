@@ -10,6 +10,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ConnectedUsers } from './connectedUsers';
+import { MultiService } from './multi.service';
 
 //@WebSocketGateway({ namespace: /\/room-.+/ })
 @WebSocketGateway({
@@ -24,6 +25,8 @@ export class MultiGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer() public server: Server;
+
+  constructor(private multiService: MultiService){}
 
   @SubscribeMessage('test')
   handleTest(@MessageBody() data: string) {
@@ -55,30 +58,38 @@ export class MultiGateway
     this.server.sockets.adapter.on("join-room", (room, id) => {
       console.log(`socket ${id} has joined room ${room}`);
     })
-    // newNamespace.adapter.once('leave-room', (room, id) => {
-    //   console.log('leave-room')
-    //   console.log('room', room)
-    //   console.dir(room)
-    //   console.log('id', id)
-    // })
   }
-
-  // @SubscribeMessage('leave-room')
-  // handleLeave(
-  //   @MessageBody() data: { room: any, id: any }, 
-  //   @ConnectedSocket() client: Socket,
-  // ){
-  //   console.log(`socket ${data.id} has leaved room ${data.room}`);
-  //   console.log(`socket ${client.id} has leaved room ${client.data.roomid}`);
-  //   //client.to(`/room-${client.nsp.name}-${data.roomid}`).emit('leave', { Nick, logined });
-  // }
 
   @SubscribeMessage('start')
   handleStart(
-    @MessageBody() roomid: string,
     @ConnectedSocket() client: Socket,
   ) {
-    client.to(`${client.nsp.name}-${roomid}`).emit('start', 'start');
+    const pomo = {
+      mode: 'pomo',
+      cycle: 1,
+    };
+    this.server.to(`${client.nsp.name}-${client.data.roomid}`).emit('start', pomo);
+  }
+
+  @SubscribeMessage('change')
+  handleMode(
+    @MessageBody() pomo: { mode: string, cycle: number },
+    @ConnectedSocket() client: Socket,
+  ){
+    if(pomo.mode === 'pomo'){
+      if(pomo.cycle == 4){
+        this.server.to(`${client.nsp.name}-${client.data.roomid}`).emit('finish', 'finish');
+      }
+      else{
+        pomo.mode = 'break';
+        this.server.to(`${client.nsp.name}-${client.data.roomid}`).emit('change', pomo);
+      }
+    }
+    else if(pomo.mode === 'break'){
+      pomo.mode = 'pomo';
+      pomo.cycle++;
+      this.server.to(`${client.nsp.name}-${client.data.roomid}`).emit('change', pomo);
+    }
   }
 
   handleConnection(client: Socket) {
@@ -97,6 +108,10 @@ export class MultiGateway
     const nspName = client.nsp.name;
     const nsp = client.nsp;
     delete ConnectedUsers[client.nsp.name][client.id];
+
+    // 나간 사람 DB에서 데이터 수정(user) 또는 삭제(member)
+    this.multiService.leaveRoom(client.data.roomid, client.data.nickname, client.data.logined);
+
     console.log(`client ${client.data.nickname} leaved ${nspName}-${client.data.roomid}`);
     nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
     this.server.to(`${nspName}-${client.data.roomid}`).emit('leave', { 
