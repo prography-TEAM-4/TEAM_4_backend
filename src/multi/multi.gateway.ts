@@ -114,6 +114,7 @@ export class MultiGateway
 
     console.log(`client ${client.data.nickname} leaved ${nspName}-${client.data.roomid}`);
     nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
+
     this.server.to(`${nspName}-${client.data.roomid}`).emit('leave', { 
       data: { 
         nickname: client.data.nickname, 
