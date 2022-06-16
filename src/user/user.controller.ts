@@ -245,6 +245,9 @@ export class UserController {
           tail: 3,
           all: 3,
         },
+        icons: {
+          arrow: 2,
+        },
       },
     },
   })

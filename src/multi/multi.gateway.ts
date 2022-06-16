@@ -10,6 +10,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ConnectedUsers } from './connectedUsers';
+import { MultiService } from './multi.service';
 
 //@WebSocketGateway({ namespace: /\/room-.+/ })
 @WebSocketGateway({
@@ -25,6 +26,8 @@ export class MultiGateway
 {
   @WebSocketServer() public server: Server;
 
+  constructor(private multiService: MultiService){}
+
   @SubscribeMessage('test')
   handleTest(@MessageBody() data: string) {
     console.log('test', data);
@@ -37,39 +40,56 @@ export class MultiGateway
   // 이벤트 발생 시
   @SubscribeMessage('enter')
   handleEnter(
-    @MessageBody() data: { id: number; roomid: string },
+    @MessageBody() data: { nickname: string, logined: boolean, roomid: string },
     @ConnectedSocket() client: Socket,
   ) {
     const newNamespace = client.nsp;
     console.log('enter', newNamespace);
-    ConnectedUsers[client.nsp.name][client.id] = data.id;
-    newNamespace.emit(
-      'ConnectedUsers',
-      Object.values(ConnectedUsers[client.nsp.name]),
-    );
     console.log('join', client.nsp.name, data.roomid);
-    client.join(`${client.nsp.name}-${data.roomid}`);
-    this.server.sockets.adapter.on('join-room', (room, id) => {
-      console.log(`socket ${id} has joined room ${room}`);
-    });
-  }
 
-  @SubscribeMessage('leave')
-  handleLeave(
-    @MessageBody() data: { Nick: string, logined: boolean, roomid: string }, 
-    @ConnectedSocket() client: Socket,
-  ){
-    const Nick: string = data.Nick;
-    const logined: boolean = data.logined;
-    client.to(`/room-${client.nsp.name}-${data.roomid}`).emit('leave', { Nick, logined });
+    ConnectedUsers[client.nsp.name][client.id] = data.nickname;
+    newNamespace.emit('ConnectedUsers', Object.values(ConnectedUsers[client.nsp.name]));
+
+    client.data.roomid = data.roomid;
+    client.data.nickname = data.nickname;
+    client.data.logined = data.logined;  
+
+    client.join(`${client.nsp.name}-${data.roomid}`);
+    this.server.sockets.adapter.on("join-room", (room, id) => {
+      console.log(`socket ${id} has joined room ${room}`);
+    })
   }
 
   @SubscribeMessage('start')
   handleStart(
-    @MessageBody() roomid: string,
     @ConnectedSocket() client: Socket,
   ) {
-    client.to(`/room-${client.nsp.name}-${roomid}`).emit('start', 'start');
+    const pomo = {
+      mode: 'pomo',
+      cycle: 1,
+    };
+    this.server.to(`${client.nsp.name}-${client.data.roomid}`).emit('start', pomo);
+  }
+
+  @SubscribeMessage('change')
+  handleMode(
+    @MessageBody() pomo: { mode: string, cycle: number },
+    @ConnectedSocket() client: Socket,
+  ){
+    if(pomo.mode === 'pomo'){
+      if(pomo.cycle == 4){
+        this.server.to(`${client.nsp.name}-${client.data.roomid}`).emit('finish', 'finish');
+      }
+      else{
+        pomo.mode = 'break';
+        this.server.to(`${client.nsp.name}-${client.data.roomid}`).emit('change', pomo);
+      }
+    }
+    else if(pomo.mode === 'break'){
+      pomo.mode = 'pomo';
+      pomo.cycle++;
+      this.server.to(`${client.nsp.name}-${client.data.roomid}`).emit('change', pomo);
+    }
   }
 
   handleConnection(client: Socket) {
@@ -85,13 +105,21 @@ export class MultiGateway
   handleDisconnect(client: Socket) {
     console.log('Disconnected', client.nsp.name);
     
+    const nspName = client.nsp.name;
     const nsp = client.nsp;
     delete ConnectedUsers[client.nsp.name][client.id];
-    console.log(ConnectedUsers);
+
+    // 나간 사람 DB에서 데이터 수정(user) 또는 삭제(member)
+    this.multiService.leaveRoom(client.data.roomid, client.data.nickname, client.data.logined);
+
+    console.log(`client ${client.data.nickname} leaved ${nspName}-${client.data.roomid}`);
     nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
 
-    this.server.sockets.adapter.on('leave-room', (room, id) => {
-      console.log(`socket ${id} has leaved room ${room}`);
+    this.server.to(`${nspName}-${client.data.roomid}`).emit('leave', { 
+      data: { 
+        nickname: client.data.nickname, 
+        logined: client.data.logined,
+      } 
     });
   }
 }
