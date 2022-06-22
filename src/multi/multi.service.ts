@@ -1,6 +1,6 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { hostname } from 'os';
+import { generateImageCode } from 'src/commom/utility/generateImageCode';
 import { Member } from 'src/entities/Member';
 import { Room } from 'src/entities/Room';
 import { RoomChat } from 'src/entities/RoomChat';
@@ -87,7 +87,7 @@ export class MultiService {
                 }
             }
             await this.roomRepository.save(room);
-            return { success: true };
+            return { success: true, room };
         }catch(error){
             return { success: false }
         }
@@ -109,5 +109,43 @@ export class MultiService {
             }
         });
         await this.roomChatRepository.save(roomChats);
+    }
+
+    async finishPomo(roomid: string){
+        try{
+            const room = await this.roomRepository.findOne({
+                where: { roomid: roomid, },
+            });
+
+            if(!room){
+                throw new BadRequestException('Not Exist Room');
+            }
+
+            const member = await this.memberRepository.find({
+                where: { room: room },
+                select: ['all'],
+            });
+            
+            const user = await this.userRepository.find({
+                where: { room: room},
+                select: ['all'],
+            });
+
+            const idList: number[] = []
+
+            member.forEach((member) => {
+                idList.push(parseInt(member.all));
+            });
+
+            user.forEach((user) => {
+                idList.push(parseInt(user.all));
+            });
+
+            const mergeImg: string = generateImageCode(idList);
+
+            return { success:true, mergeImg}
+        }catch(error){
+            return { success: false }
+        }
     }
 }

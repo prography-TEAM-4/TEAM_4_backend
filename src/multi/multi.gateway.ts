@@ -78,7 +78,9 @@ export class MultiGateway
   ){
     if(pomo.mode === 'pomo'){
       if(pomo.cycle == 4){
-        this.server.to(`${client.nsp.name}-${client.data.roomid}`).emit('finish', 'finish');
+        const mergeImg: any = this.multiService.finishPomo(client.data.roomid)
+
+        this.server.to(`${client.nsp.name}-${client.data.roomid}`).emit('finish', mergeImg);
       }
       else{
         pomo.mode = 'break';
@@ -110,12 +112,13 @@ export class MultiGateway
     delete ConnectedUsers[client.nsp.name][client.id];
 
     // 나간 사람 DB에서 데이터 수정(user) 또는 삭제(member)
-    this.multiService.leaveRoom(client.data.roomid, client.data.nickname, client.data.logined);
+    const room: any = this.multiService.leaveRoom(client.data.roomid, client.data.nickname, client.data.logined);
 
     console.log(`client ${client.data.nickname} leaved ${nspName}-${client.data.roomid}`);
     nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
 
     this.server.to(`${nspName}-${client.data.roomid}`).emit('leave', { 
+      room,
       data: { 
         nickname: client.data.nickname, 
         logined: client.data.logined,
