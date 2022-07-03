@@ -13,6 +13,7 @@ import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { jwtParsed } from 'src/user/dto/userdata.dto';
+import { parseJWT } from 'src/commom/utility/parseJWT';
 
 @Injectable()
 export class OauthService {
@@ -135,31 +136,20 @@ export class OauthService {
   }
 
   refreshToken(token: string) {
-    if (!token.startsWith('Bearer ')) {
-      throw new NotFoundException('unknown error');
-    }
-    const parsedToken = token.replace(/^(Bearer )/, '');
-    try {
-      // verify를 통해 값 decode!
-      const decoded: jwtParsed = jwt.verify(
-        parsedToken,
+    const decoded: jwtParsed = parseJWT(token, this.config.get('SECRET'));
+
+    return {
+      accessToken: jwt.sign(
+        {
+          id: decoded.iat,
+          provider: decoded.provider,
+          iss: decoded.iss,
+          sub: decoded.sub,
+          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
+        },
         this.config.get('SECRET'),
-      );
-      return {
-        accessToken: jwt.sign(
-          {
-            id: decoded.iat,
-            provider: decoded.provider,
-            iss: decoded.iss,
-            sub: decoded.sub,
-            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
-          },
-          this.config.get('SECRET'),
-        ),
-      };
-    } catch (error) {
-      throw new UnauthorizedException(`unauthorized error`);
-    }
+      ),
+    };
   }
 
   async kakaoLogin(kakaoCode: string, res: Response) {

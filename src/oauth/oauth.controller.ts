@@ -125,7 +125,7 @@ export class OauthController {
   }
 
   @ApiHeader({
-    name: 'Authorization',
+    name: 'Bearer Authorization',
     description: 'eyJhGcioJ와 같은 accessToken',
   })
   @ApiResponse({
@@ -149,6 +149,6 @@ export class OauthController {
   })
   @Get('/refresh')
   refreshToken(@Headers('Authorization') token: string) {
-    return this.refreshToken(token);
+    return this.oauthService.refreshToken(token);
   }
 }

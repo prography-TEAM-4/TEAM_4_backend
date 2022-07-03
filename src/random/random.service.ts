@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Member } from 'src/entities/Member';
@@ -17,6 +11,7 @@ import { Not, Repository } from 'typeorm';
 import * as jwt from 'jsonwebtoken';
 import { v4 } from 'uuid';
 import { Player } from './random-mode.player';
+import { parseJWT } from 'src/commom/utility/parseJWT';
 
 @Injectable()
 export class RandomService {
@@ -69,11 +64,10 @@ export class RandomService {
   }
 
   async enterRoom(roomid: string, token: any, nick: string, imgCode: string) {
-    let userData: jwtParsed;
     let flag: boolean = true;
-
+    let userData: jwtParsed;
     try {
-      userData = jwt.verify(token, this.config.get('SECRET'));
+      userData = parseJWT(token, this.config.get('SECRET'));
     } catch (error) {
       flag = false;
     } finally {

@@ -32,7 +32,7 @@ export class FriendsController {
   // }
 
   @ApiHeader({
-    name: 'Authorization',
+    name: 'Bearer Authorization',
     description: 'eyJhGcioJ와 같은 accessToken',
   })
   @ApiBody({
@@ -48,16 +48,16 @@ export class FriendsController {
       example: { success: false, code: 401, data: 'unauthorized error' },
     },
   })
-  @ApiResponse({ 
-    description: 'Duplicate Nickname', 
-    status: 400, 
-    schema: { 
-      example: { 
-        success: false, 
-        code: 400, 
-        data: 'Duplicate Nickname'
-      }, 
-    }, 
+  @ApiResponse({
+    description: 'Duplicate Nickname',
+    status: 400,
+    schema: {
+      example: {
+        success: false,
+        code: 400,
+        data: 'Duplicate Nickname',
+      },
+    },
   })
   @ApiResponse({
     description: '로그인 유저: 친구방 만들기 성공',
@@ -65,11 +65,11 @@ export class FriendsController {
     schema: {
       example: {
         room: {
-          id: '1', 
-          roomid: 'a199ead7-4dfc-429a-a62c-84b6039854ac', 
-          host: 'user@example.com', 
-          headCount: '0', 
-          status: 'FRIENDS', 
+          id: '1',
+          roomid: 'a199ead7-4dfc-429a-a62c-84b6039854ac',
+          host: 'user@example.com',
+          headCount: '0',
+          status: 'FRIENDS',
         },
       },
     },
@@ -103,7 +103,7 @@ export class FriendsController {
     description: '입장하려는 방 코드',
   })
   @ApiHeader({
-    name: 'Authorization',
+    name: 'Bearer Authorization',
     description: 'eyJhGcioJ와 같은 accessToken',
   })
   @ApiBody({
@@ -116,22 +116,23 @@ export class FriendsController {
     description: 'not exist room',
     status: 404,
     schema: {
-      example: { 
-        success: false, 
-        code: 400, 
-        data: 'Not Exist Room' },
+      example: {
+        success: false,
+        code: 400,
+        data: 'Not Exist Room',
+      },
     },
   })
-  @ApiResponse({ 
-    description: 'Duplicate Nickname', 
-    status: 400, 
-    schema: { 
-      example: { 
-        success: false, 
-        code: 400, 
-        data: 'Duplicate Nickname' 
-      }, 
-    }, 
+  @ApiResponse({
+    description: 'Duplicate Nickname',
+    status: 400,
+    schema: {
+      example: {
+        success: false,
+        code: 400,
+        data: 'Duplicate Nickname',
+      },
+    },
   })
   @ApiResponse({
     description: '로그인 유저 - 친구방 입장 성공',
@@ -159,15 +160,17 @@ export class FriendsController {
             all: '3',
             point: -1,
             logined: false,
-          }
+          },
         ],
-        room: [{ 
-          id: '1',
-          roomid: 'a199ead7-4dfc-429a-a62c-84b6039854ac', 
-          host: 'host', 
-          headCount: '3', 
-          status: 'FRIENDS', 
-        }],
+        room: [
+          {
+            id: '1',
+            roomid: 'a199ead7-4dfc-429a-a62c-84b6039854ac',
+            host: 'host',
+            headCount: '3',
+            status: 'FRIENDS',
+          },
+        ],
       },
     },
   })
@@ -196,39 +199,45 @@ export class FriendsController {
     status: 200,
     schema: {
       example: {
-        roomChats: [[
-          {
-            id: 1,
-            content: 'hi',
-            createdAt: '2022-05-23T07:27:16.467Z',
-            user: null,
-            member: [{
-              id: '1',
-              Nick: 'exampleMember',
-              all: '2',
-              createAt: '2022-05-23T07:09:54.678Z',
-              deleteAt: null,
-              updateAt: '2022-05-23T07:09:54.678Z'
-            },]
-          },
-          {
-            id: 2,
-            content: 'hello',
-            createdAt: '2022-05-23T07:27:20.467Z',
-            user: [{
-              id: '1',
-              SnsId: 'user@example.com',
-              Nick: 'exampleUser',
-              Provider: 'examplePlatform',
-              point: 0,
-              all: '1',
-              createAt: '2022-05-23T07:09:54.678Z',
-              deleteAt: null,
-              updateAt: '2022-05-23T07:09:54.678Z'
-            },],
-            member: null,
-          },
-        ]],
+        roomChats: [
+          [
+            {
+              id: 1,
+              content: 'hi',
+              createdAt: '2022-05-23T07:27:16.467Z',
+              user: null,
+              member: [
+                {
+                  id: '1',
+                  Nick: 'exampleMember',
+                  all: '2',
+                  createAt: '2022-05-23T07:09:54.678Z',
+                  deleteAt: null,
+                  updateAt: '2022-05-23T07:09:54.678Z',
+                },
+              ],
+            },
+            {
+              id: 2,
+              content: 'hello',
+              createdAt: '2022-05-23T07:27:20.467Z',
+              user: [
+                {
+                  id: '1',
+                  SnsId: 'user@example.com',
+                  Nick: 'exampleUser',
+                  Provider: 'examplePlatform',
+                  point: 0,
+                  all: '1',
+                  createAt: '2022-05-23T07:09:54.678Z',
+                  deleteAt: null,
+                  updateAt: '2022-05-23T07:09:54.678Z',
+                },
+              ],
+              member: null,
+            },
+          ],
+        ],
       },
     },
   })
@@ -239,7 +248,7 @@ export class FriendsController {
   }
 
   @ApiHeader({
-    name: 'Authorization',
+    name: 'Bearer Authorization',
     description: 'eyJhGcioJ와 같은 accessToken',
   })
   @ApiParam({

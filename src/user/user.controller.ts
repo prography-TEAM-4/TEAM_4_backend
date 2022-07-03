@@ -30,7 +30,7 @@ export class UserController {
 
   @ApiBearerAuth('jwt')
   @ApiHeader({
-    name: 'Authorization',
+    name: 'Bearer Authorization',
     description: 'eyJhGcioJ와 같은 accessToken',
   })
   @ApiResponse({
@@ -85,7 +85,7 @@ export class UserController {
 
   @ApiBearerAuth('jwt')
   @ApiHeader({
-    name: 'Authorization',
+    name: 'Bearer Authorization',
     description: 'eyJhGcioJ와 같은 accessToken',
   })
   @ApiResponse({
@@ -178,7 +178,7 @@ export class UserController {
 
   @ApiBearerAuth('jwt')
   @ApiHeader({
-    name: 'Authorization',
+    name: 'Bearer Authorization',
     description: 'eyJhGcioJ와 같은 accessToken',
   })
   @ApiResponse({
@@ -244,7 +244,7 @@ export class UserController {
 
   @ApiBearerAuth('jwt')
   @ApiHeader({
-    name: 'Authorization',
+    name: 'Bearer Authorization',
     description: 'eyJhGcioJ와 같은 accessToken',
   })
   @ApiResponse({
