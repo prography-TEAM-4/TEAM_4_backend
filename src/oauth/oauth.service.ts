@@ -59,15 +59,11 @@ export class OauthService {
       },
       this.config.get('SECRET'),
     );
-    return res
-      .status(302)
-      .redirect(
-        `${this.config.get(
-          'GOOGLE_CALLBACK',
-        )}?accessToken=${ourAccessToken}&email=${data.email}&picture=${
-          data.picture
-        }`,
-      );
+    return {
+      accessToken: ourAccessToken,
+      email: data.email,
+      picture: data.picture,
+    };
   }
 
   async check(token: any) {
