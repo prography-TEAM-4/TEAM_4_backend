@@ -1,11 +1,11 @@
-import * as jwt from 'jsonwebtoken';
+import { sign } from 'jsonwebtoken';
 
 export const generateToken = (
   id: string,
   provider: string,
   secret: string,
 ): string => {
-  return jwt.sign(
+  return sign(
     {
       id,
       provider,

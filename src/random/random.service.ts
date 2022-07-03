@@ -8,7 +8,6 @@ import { User } from 'src/entities/User';
 import { MultiGateway } from 'src/multi/multi.gateway';
 import { jwtParsed } from 'src/user/dto/userdata.dto';
 import { Not, Repository } from 'typeorm';
-import * as jwt from 'jsonwebtoken';
 import { v4 } from 'uuid';
 import { Player } from './random-mode.player';
 import { parseJWT } from 'src/commom/utility/parseJWT';
