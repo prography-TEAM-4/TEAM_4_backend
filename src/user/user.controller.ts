@@ -19,10 +19,8 @@ import {
   ApiHeader,
   ApiOperation,
   ApiResponse,
-  ApiResponseProperty,
   ApiTags,
 } from '@nestjs/swagger';
-import { LoggedInGuard } from 'src/oauth/logged-in.guard';
 
 @ApiTags('Users')
 @ApiResponse({

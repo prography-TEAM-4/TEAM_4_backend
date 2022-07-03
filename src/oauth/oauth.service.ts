@@ -3,13 +3,12 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
-  UseFilters,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import { User } from 'src/entities/User';
 import { Repository } from 'typeorm';
-import { AccessToken, GoogleData } from './dto/oauth.dto';
+import { GoogleData } from './dto/oauth.dto';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
