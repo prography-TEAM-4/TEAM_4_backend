@@ -9,7 +9,7 @@ import {
   Res,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OauthService } from './oauth.service';
 import { config } from 'dotenv';
 import { Response } from 'express';
@@ -122,5 +122,33 @@ export class OauthController {
   @Get('/kakao/callback')
   async kakaoLogin(@Query('code') kakaoCode: any, @Res() res: Response) {
     return await this.oauthService.kakaoLogin(kakaoCode, res);
+  }
+
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'eyJhGcioJ와 같은 accessToken',
+  })
+  @ApiResponse({
+    description: 'unknown error',
+    status: 404,
+    schema: {
+      example: { success: false, code: 404, data: 'unknown error' },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: '성공',
+    schema: {
+      example: {
+        accessToken: 'ourAccessToken',
+      },
+    },
+  })
+  @ApiOperation({
+    summary: '토큰 연장',
+  })
+  @Get('/refresh')
+  refreshToken(@Headers('Authorization') token: string) {
+    return this.refreshToken(token);
   }
 }

@@ -7,11 +7,12 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import { User } from 'src/entities/User';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { GoogleData } from './dto/oauth.dto';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
+import { jwtParsed } from 'src/user/dto/userdata.dto';
 
 @Injectable()
 export class OauthService {
@@ -30,6 +31,7 @@ export class OauthService {
     } catch (error) {
       throw new UnauthorizedException('unauthorized error');
     }
+    console.log(accessToken);
     try {
       const alreadyExist = await this.userRepository
         .createQueryBuilder('User')
@@ -38,7 +40,7 @@ export class OauthService {
           SnsId: data.id,
         })
         .execute();
-      console.log(alreadyExist);
+      console.log(data);
       if (!alreadyExist.length) {
         const newUser = new User();
         newUser.Nick = 'testing';
@@ -131,6 +133,35 @@ export class OauthService {
         `${this.config.get('NAVER_CALLBACK')}?accessToken=${ourAccessToken}`,
       );
   }
+
+  refreshToken(token: string) {
+    if (!token.startsWith('Bearer ')) {
+      throw new NotFoundException('unknown error');
+    }
+    const parsedToken = token.replace(/^(Bearer )/, '');
+    try {
+      // verify를 통해 값 decode!
+      const decoded: jwtParsed = jwt.verify(
+        parsedToken,
+        this.config.get('SECRET'),
+      );
+      return {
+        accessToken: jwt.sign(
+          {
+            id: decoded.iat,
+            provider: decoded.provider,
+            iss: decoded.iss,
+            sub: decoded.sub,
+            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
+          },
+          this.config.get('SECRET'),
+        ),
+      };
+    } catch (error) {
+      throw new UnauthorizedException(`unauthorized error`);
+    }
+  }
+
   async kakaoLogin(kakaoCode: string, res: Response) {
     let userData: any;
     const getTokenUrl = `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${this.config.get(
