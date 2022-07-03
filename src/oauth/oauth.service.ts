@@ -1,5 +1,4 @@
 import {
-  HttpException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -7,13 +6,21 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import { User } from 'src/entities/User';
-import { Not, Repository } from 'typeorm';
-import { GoogleData } from './dto/oauth.dto';
+import { Repository } from 'typeorm';
+import { GoogleData } from './utilities/oauth.dto';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { jwtParsed } from 'src/user/dto/userdata.dto';
 import { parseJWT } from 'src/commom/utility/parseJWT';
+import { generateToken } from './utilities/generateToken';
+import {
+  findOrCreate,
+  getGoogleData,
+  getKakaoData,
+  getNaverData,
+  TFindOrCreate,
+} from './utilities/oauthApi';
 
 @Injectable()
 export class OauthService {
@@ -23,46 +30,24 @@ export class OauthService {
   ) {}
 
   async googleAccess(accessToken: string) {
-    let data: GoogleData | undefined;
-    try {
-      const tempData = await axios.get(
-        `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${accessToken}`,
-      );
-      data = tempData.data;
-    } catch (error) {
-      throw new UnauthorizedException('unauthorized error');
-    }
-    console.log(accessToken);
-    try {
-      const alreadyExist = await this.userRepository
-        .createQueryBuilder('User')
-        .where('User.provider = :provider and SnsId = :SnsId', {
-          provider: 'google',
-          SnsId: data.id,
-        })
-        .execute();
-      console.log(data);
-      if (!alreadyExist.length) {
-        const newUser = new User();
-        newUser.Nick = 'testing';
-        newUser.picture = data.picture;
-        newUser.email = data.email;
-        (newUser.Provider = 'google'), (newUser.SnsId = data.id);
-        await newUser.save();
-      }
-    } catch (error) {
-      throw new NotFoundException('unknown error');
-    }
-    const ourAccessToken = jwt.sign(
-      {
-        id: data.id,
-        provider: 'google',
-        iss: 'pomo',
-        sub: 'pomo jwt',
-        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
-      },
+    const data: GoogleData = await getGoogleData(accessToken);
+
+    const userData: TFindOrCreate = {
+      SnsId: data.id,
+      email: data.email,
+      picture: data.picture,
+      Nick: 'testing',
+      Provider: 'google',
+    };
+
+    await findOrCreate(userData, this.userRepository);
+
+    const ourAccessToken = generateToken(
+      data.id,
+      'google',
       this.config.get('SECRET'),
     );
+
     return {
       accessToken: ourAccessToken,
       email: data.email,
@@ -71,67 +56,35 @@ export class OauthService {
   }
 
   async check(token: any) {
-    try {
-      await jwt.verify(token, this.config.get('SECRET'));
-    } catch (error) {
-      throw new UnauthorizedException(`unauthorized error`);
-    }
+    parseJWT(token, this.config.get('SECRET'));
     return {
       result: true,
     };
   }
 
   async naverLogin(code: string, res: Response) {
-    const getTokenUrl = `https://nid.naver.com/oauth2.0/token?grant_type=authorization_code&client_id=${this.config.get(
-      'NAVER_CLIENTID',
-    )}&client_secret=${this.config.get(
-      'NAVER_SECRET',
-    )}&code=${code}&state=asdf`;
+    const data = await getNaverData(code, this.config);
+    const userData: TFindOrCreate = {
+      SnsId: data.id,
+      email: data.email,
+      picture: '',
+      Nick: 'testing',
+      Provider: 'naver',
+    };
+    await findOrCreate(userData, this.userRepository);
 
-    let authorization_code: any, result: any;
-
-    try {
-      authorization_code = await axios.get(getTokenUrl);
-      result = await axios.get('https://openapi.naver.com/v1/nid/me', {
-        headers: {
-          Authorization: `Bearer ${authorization_code.data.access_token}`,
-        },
-      });
-    } catch (e) {
-      throw new UnauthorizedException(`unauthorized error`);
-    }
-
-    try {
-      const alreadyExist = await this.userRepository
-        .createQueryBuilder('User')
-        .where('User.provider = :provider and SnsId = :SnsId', {
-          provider: 'naver',
-          SnsId: result.data.response.id,
-        })
-        .execute();
-      if (!alreadyExist.length) {
-        const newUser = new User();
-        newUser.Nick = 'testing';
-        (newUser.Provider = 'naver'), (newUser.SnsId = result.data.response.id);
-        await newUser.save();
-      }
-    } catch (error) {
-      throw new NotFoundException('unknown error');
-    }
-    const ourAccessToken = jwt.sign(
-      {
-        id: result.data.response.id,
-        provider: 'naver',
-        iss: 'pomo',
-        sub: 'pomo jwt',
-        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
-      },
+    generateToken(data.id, 'naver', this.config.get('SECRET'));
+    const ourAccessToken = generateToken(
+      data.id,
+      'naver',
       this.config.get('SECRET'),
     );
     return res
       .status(302)
       .redirect(
-        `${this.config.get('NAVER_CALLBACK')}?accessToken=${ourAccessToken}`,
+        `${this.config.get(
+          'NAVER_CALLBACK',
+        )}?accessToken=${ourAccessToken}&email=${data.email}`,
       );
   }
 
@@ -139,69 +92,29 @@ export class OauthService {
     const decoded: jwtParsed = parseJWT(token, this.config.get('SECRET'));
 
     return {
-      accessToken: jwt.sign(
-        {
-          id: decoded.iat,
-          provider: decoded.provider,
-          iss: decoded.iss,
-          sub: decoded.sub,
-          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
-        },
+      accessToken: generateToken(
+        decoded.id,
+        decoded.provider,
         this.config.get('SECRET'),
       ),
     };
   }
 
   async kakaoLogin(kakaoCode: string, res: Response) {
-    let userData: any;
-    const getTokenUrl = `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${this.config.get(
-      'KAKAO_CLIENTID',
-    )}&redirect_uri=${this.config.get(
-      'KAKAO_REDIRECT',
-    )}&code=${kakaoCode}&client_secret=${this.config.get('KAKAO_SECRET')}`;
-    let token: any;
-    try {
-      token = await axios.post(getTokenUrl);
+    const data = await getKakaoData(kakaoCode, this.config);
+    const userData: TFindOrCreate = {
+      Nick: 'testing',
+      picture: '',
+      email: '',
+      Provider: 'kakao',
+      SnsId: data.id,
+    };
 
-      const access_token = token.data.access_token;
-      const result = await axios.get(
-        'https://kapi.kakao.com/v1/user/access_token_info',
-        {
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-          },
-        },
-      );
-      userData = result.data;
-    } catch (e) {
-      throw new UnauthorizedException(`unauthorized error`);
-    }
+    await findOrCreate(userData, this.userRepository);
 
-    try {
-      const alreadyExist = await this.userRepository
-        .createQueryBuilder('User')
-        .where('User.provider = :provider and SnsId = :SnsId', {
-          provider: 'kakao',
-          SnsId: userData.id,
-        })
-        .execute();
-      if (!alreadyExist.length) {
-        const newUser = new User();
-        newUser.Nick = 'testing';
-        (newUser.Provider = 'kakao'), (newUser.SnsId = userData.id);
-        await newUser.save();
-      }
-    } catch (error) {
-      throw new NotFoundException('unknown error');
-    }
-    const ourAccessToken = jwt.sign(
-      {
-        id: userData.id,
-        provider: 'kakao',
-        iss: 'pomo',
-        sub: 'pomo jwt',
-        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
-      },
+    const ourAccessToken = generateToken(
+      data.id,
+      'kakao',
       this.config.get('SECRET'),
     );
     return res
