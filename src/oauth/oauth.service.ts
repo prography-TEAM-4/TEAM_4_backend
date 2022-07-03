@@ -21,7 +21,7 @@ export class OauthService {
     private readonly config: ConfigService,
   ) {}
 
-  async googleAccess(accessToken: string, res: Response) {
+  async googleAccess(accessToken: string) {
     let data: GoogleData | undefined;
     try {
       const tempData = await axios.get(
@@ -39,7 +39,6 @@ export class OauthService {
           SnsId: data.id,
         })
         .execute();
-      console.log('db find success');
       console.log(alreadyExist);
       if (!alreadyExist.length) {
         const newUser = new User();

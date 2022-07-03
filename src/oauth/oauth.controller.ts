@@ -36,12 +36,9 @@ export class OauthController {
       example: { success: false, code: 404, data: 'unknown error' },
     },
   })
-  @ApiOperation({
-    summary: `로그인 성공시 ${process.env.GOOGLE_CALLBACK}/oauth?accessToken=토큰값 으로 redirect`,
-  })
   @Get('/google/callback')
-  async googleCheck(@Query('code') code: string, @Res() res: Response) {
-    return await this.oauthService.googleAccess(code, res);
+  async googleCheck(@Query('code') code: string) {
+    return await this.oauthService.googleAccess(code);
   }
 
   @ApiOperation({
@@ -89,7 +86,7 @@ export class OauthController {
   naverRedirect() {}
 
   @ApiOperation({
-    summary: `로그인 성공시 ${process.env.NAVER_CALLBACK}/oauth?accessToken=토큰값 으로 redirect`,
+    summary: `로그인 성공시 ${process.env.NAVER_CALLBACK}?accessToken=토큰값 으로 redirect`,
   })
   @Get('naver/callback')
   async naverLogin(@Query('code') code: string, @Res() res: Response) {
@@ -111,7 +108,7 @@ export class OauthController {
   kakaoPage() {}
 
   @ApiOperation({
-    summary: `로그인 성공시 ${process.env.KAKAO_CALLBACK}/oauth?accessToken=토큰값 으로 redirect`,
+    summary: `로그인 성공시 ${process.env.KAKAO_CALLBACK}?accessToken=토큰값 으로 redirect`,
   })
   @Get('/kakao/callback')
   async kakaoLogin(@Query('code') kakaoCode: any, @Res() res: Response) {

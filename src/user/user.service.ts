@@ -113,7 +113,6 @@ export class UserService {
   }
 
   async randomNick() {
-    const rand = Math.floor(Math.random() * 100);
     const ImgCode = Math.floor(Math.random() * 6) + 1;
     const code = {
       face: ImgCode,
