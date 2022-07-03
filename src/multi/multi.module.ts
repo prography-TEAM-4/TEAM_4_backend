@@ -8,10 +8,8 @@ import { MultiGateway } from './multi.gateway';
 import { MultiService } from './multi.service';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([User , Member, Room, RoomChat]),
-    ],
-    providers: [MultiGateway, MultiService],
-    exports: [MultiGateway],
+  imports: [TypeOrmModule.forFeature([User, Member, Room, RoomChat])],
+  providers: [MultiGateway, MultiService],
+  exports: [MultiGateway],
 })
 export class MultiModule {}

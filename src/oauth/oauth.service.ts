@@ -1,14 +1,8 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import axios from 'axios';
 import { User } from 'src/entities/User';
 import { Repository } from 'typeorm';
 import { GoogleData } from './utilities/oauth.dto';
-import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { jwtParsed } from 'src/user/dto/userdata.dto';
@@ -55,7 +49,7 @@ export class OauthService {
     };
   }
 
-  async check(token: any) {
+  async check(token: string) {
     parseJWT(token, this.config.get('SECRET'));
     return {
       result: true,
@@ -64,6 +58,7 @@ export class OauthService {
 
   async naverLogin(code: string, res: Response) {
     const data = await getNaverData(code, this.config);
+    console.log(data);
     const userData: TFindOrCreate = {
       SnsId: data.id,
       email: data.email,

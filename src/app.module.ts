@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { MultiModule } from './multi/multi.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { OauthController } from './oauth/oauth.controller';
 import { OauthModule } from './oauth/oauth.module';
 import { UserModule } from './user/user.module';
 import { ModeModule } from './mode/mode.module';

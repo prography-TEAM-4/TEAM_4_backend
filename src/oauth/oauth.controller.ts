@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Headers,
-  Post,
-  Query,
-  Redirect,
-  Res,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Get, Headers, Query, Redirect, Res } from '@nestjs/common';
 import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OauthService } from './oauth.service';
 import { config } from 'dotenv';

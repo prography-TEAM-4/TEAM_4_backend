@@ -6,7 +6,6 @@ import { User } from 'src/entities/User';
 import { MultiGateway } from 'src/multi/multi.gateway';
 import { jwtParsed } from 'src/user/dto/userdata.dto';
 import { Repository } from 'typeorm';
-import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { Member } from 'src/entities/Member';
 import { v4 } from 'uuid';

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Headers, Param } from '@nestjs/common';
+import { Body, Controller, Post, Headers, Param } from '@nestjs/common';
 import {
   ApiBody,
   ApiHeader,

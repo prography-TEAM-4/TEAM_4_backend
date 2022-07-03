@@ -1,6 +1,4 @@
 import {
-  BadRequestException,
-  ForbiddenException,
   Injectable,
   NotAcceptableException,
   NotFoundException,
@@ -9,10 +7,9 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/User';
-import { createQueryBuilder, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateBookDto } from './dto/create-user.dto';
 import { ConfigService } from '@nestjs/config';
-import * as jwt from 'jsonwebtoken';
 import { jwtParsed } from './dto/userdata.dto';
 import { BookList } from 'src/entities/BookList';
 import { getRandomNickname } from './utilities/user.utility';

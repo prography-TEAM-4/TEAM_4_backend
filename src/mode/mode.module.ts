@@ -4,6 +4,6 @@ import { ModeService } from './mode.service';
 
 @Module({
   controllers: [ModeController],
-  providers: [ModeService]
+  providers: [ModeService],
 })
 export class ModeModule {}

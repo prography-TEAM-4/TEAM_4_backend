@@ -18,6 +18,6 @@ import { FriendsService } from './friends.service';
     ConfigService,
   ],
   controllers: [FriendsController],
-  providers: [FriendsService]
+  providers: [FriendsService],
 })
 export class FriendsModule {}

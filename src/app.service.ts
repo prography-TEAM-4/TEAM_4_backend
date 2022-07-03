@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiResponse } from '@nestjs/swagger';
 
 @Injectable()
 export class AppService {

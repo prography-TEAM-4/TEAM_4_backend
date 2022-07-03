@@ -1,1 +1,1 @@
-export const ConnectedUsers = {}
+export const ConnectedUsers = {};

@@ -4,10 +4,7 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Post,
-  Query,
-  UseGuards,
   Headers,
 } from '@nestjs/common';
 import {
@@ -15,7 +12,6 @@ import {
   ApiHeader,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';

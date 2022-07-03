@@ -15,9 +15,9 @@ import { Member } from 'src/entities/Member';
     TypeOrmModule.forFeature([Room, RoomChat, User, Member]),
     MultiModule,
     OauthModule,
-    ConfigService
+    ConfigService,
   ],
   providers: [RandomService],
-  controllers: [RandomController]
+  controllers: [RandomController],
 })
 export class RandomModule {}
