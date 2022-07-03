@@ -115,7 +115,6 @@ export class OauthController {
   })
   @Get('/kakao/callback')
   async kakaoLogin(@Query('code') kakaoCode: any, @Res() res: Response) {
-    console.log('here');
     return await this.oauthService.kakaoLogin(kakaoCode, res);
   }
 }

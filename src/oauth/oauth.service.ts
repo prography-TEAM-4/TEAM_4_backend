@@ -63,7 +63,11 @@ export class OauthService {
     return res
       .status(302)
       .redirect(
-        `${this.config.get('GOOGLE_CALLBACK')}?accessToken=${ourAccessToken}`,
+        `${this.config.get(
+          'GOOGLE_CALLBACK',
+        )}?accessToken=${ourAccessToken}&email=${data.email}&picture=${
+          data.picture
+        }`,
       );
   }
 
