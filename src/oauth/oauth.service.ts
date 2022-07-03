@@ -42,6 +42,8 @@ export class OauthService {
       if (!alreadyExist.length) {
         const newUser = new User();
         newUser.Nick = 'testing';
+        newUser.picture = data.picture;
+        newUser.email = data.email;
         (newUser.Provider = 'google'), (newUser.SnsId = data.id);
         await newUser.save();
       }

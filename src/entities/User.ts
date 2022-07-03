@@ -36,6 +36,12 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   all: string;
 
+  @Column({ nullable: true, length: 1000 })
+  picture: string;
+
+  @Column({ nullable: true })
+  email: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
