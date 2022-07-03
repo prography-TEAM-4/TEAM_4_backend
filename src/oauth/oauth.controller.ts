@@ -9,11 +9,9 @@ import {
   Res,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AccessToken } from './dto/oauth.dto';
+import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OauthService } from './oauth.service';
 import { config } from 'dotenv';
-import { RedirectInterceptor } from './functions/redirect';
 import { Response } from 'express';
 config();
 
@@ -36,12 +34,20 @@ export class OauthController {
       example: { success: false, code: 404, data: 'unknown error' },
     },
   })
-  @ApiOperation({
-    summary: `로그인 성공시 ${process.env.GOOGLE_CALLBACK}/oauth?accessToken=토큰값 으로 redirect`,
+  @ApiResponse({
+    status: 200,
+    description: '성공',
+    schema: {
+      example: {
+        accessToken: 'ourAccessToken',
+        email: 'email',
+        picture: 'picture url',
+      },
+    },
   })
   @Get('/google/callback')
-  async googleCheck(@Query('code') code: string, @Res() res: Response) {
-    return await this.oauthService.googleAccess(code, res);
+  async googleCheck(@Query('code') code: string) {
+    return await this.oauthService.googleAccess(code);
   }
 
   @ApiOperation({
@@ -89,7 +95,7 @@ export class OauthController {
   naverRedirect() {}
 
   @ApiOperation({
-    summary: `로그인 성공시 ${process.env.NAVER_CALLBACK}/oauth?accessToken=토큰값 으로 redirect`,
+    summary: `로그인 성공시 ${process.env.NAVER_CALLBACK}?accessToken=토큰값 으로 redirect`,
   })
   @Get('naver/callback')
   async naverLogin(@Query('code') code: string, @Res() res: Response) {
@@ -111,11 +117,38 @@ export class OauthController {
   kakaoPage() {}
 
   @ApiOperation({
-    summary: `로그인 성공시 ${process.env.KAKAO_CALLBACK}/oauth?accessToken=토큰값 으로 redirect`,
+    summary: `로그인 성공시 ${process.env.KAKAO_CALLBACK}?accessToken=토큰값 으로 redirect`,
   })
   @Get('/kakao/callback')
   async kakaoLogin(@Query('code') kakaoCode: any, @Res() res: Response) {
-    console.log('here');
     return await this.oauthService.kakaoLogin(kakaoCode, res);
+  }
+
+  @ApiHeader({
+    name: 'Bearer Authorization',
+    description: 'eyJhGcioJ와 같은 accessToken',
+  })
+  @ApiResponse({
+    description: 'unknown error',
+    status: 404,
+    schema: {
+      example: { success: false, code: 404, data: 'unknown error' },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: '성공',
+    schema: {
+      example: {
+        accessToken: 'ourAccessToken',
+      },
+    },
+  })
+  @ApiOperation({
+    summary: '토큰 연장',
+  })
+  @Get('/refresh')
+  refreshToken(@Headers('Authorization') token: string) {
+    return this.oauthService.refreshToken(token);
   }
 }

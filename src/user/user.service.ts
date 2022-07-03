@@ -16,6 +16,7 @@ import * as jwt from 'jsonwebtoken';
 import { jwtParsed } from './dto/userdata.dto';
 import { BookList } from 'src/entities/BookList';
 import { getRandomNickname } from './utilities/user.utility';
+import { parseJWT } from 'src/commom/utility/parseJWT';
 
 @Injectable()
 export class UserService {
@@ -26,12 +27,7 @@ export class UserService {
     private readonly config: ConfigService,
   ) {}
   async create(createUserDto: CreateBookDto, token: any) {
-    let userData: jwtParsed;
-    try {
-      userData = jwt.verify(token, this.config.get('SECRET'));
-    } catch (error) {
-      throw new UnauthorizedException(`unauthorized error`);
-    }
+    const userData: jwtParsed = parseJWT(token, this.config.get('SECRET'));
     const existUserList = await this.usersRepository.find({
       where: { SnsId: userData.id, Provider: userData.provider },
     });
@@ -59,12 +55,7 @@ export class UserService {
   }
 
   async findAll(token: any) {
-    let userData: jwtParsed;
-    try {
-      userData = jwt.verify(token, this.config.get('SECRET'));
-    } catch (error) {
-      throw new UnauthorizedException(`unauthorized error`);
-    }
+    const userData: jwtParsed = parseJWT(token, this.config.get('SECRET'));
     try {
       const user = await this.usersRepository.findOne({
         where: { SnsId: userData.id, Provider: userData.provider },
@@ -82,12 +73,7 @@ export class UserService {
   }
 
   async findUser(token: any) {
-    let userData: jwtParsed;
-    try {
-      userData = await jwt.verify(token, this.config.get('SECRET'));
-    } catch (error) {
-      throw new UnauthorizedException(`unauthorized error`);
-    }
+    const userData: jwtParsed = parseJWT(token, this.config.get('SECRET'));
 
     try {
       const user = await this.usersRepository.findOne({
@@ -113,7 +99,6 @@ export class UserService {
   }
 
   async randomNick() {
-    const rand = Math.floor(Math.random() * 100);
     const ImgCode = Math.floor(Math.random() * 6) + 1;
     const code = {
       face: ImgCode,
@@ -136,12 +121,8 @@ export class UserService {
   }
 
   async patchUser(token: any, body: string) {
-    let userData: jwtParsed;
-    try {
-      userData = await jwt.verify(token, this.config.get('SECRET'));
-    } catch (error) {
-      throw new UnauthorizedException(`unauthorized error`);
-    }
+    const userData: jwtParsed = parseJWT(token, this.config.get('SECRET'));
+
     try {
       const user = await this.usersRepository.findOne({
         where: { SnsId: userData.id, Provider: userData.provider },

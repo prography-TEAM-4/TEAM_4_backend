@@ -1,28 +1,14 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Header,
-  Headers,
-  UseGuards,
-  Put,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Headers, Put } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateBookDto, ResponseBookDto } from './dto/create-user.dto';
+import { CreateBookDto } from './dto/create-user.dto';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiHeader,
   ApiOperation,
   ApiResponse,
-  ApiResponseProperty,
   ApiTags,
 } from '@nestjs/swagger';
-import { LoggedInGuard } from 'src/oauth/logged-in.guard';
 
 @ApiTags('Users')
 @ApiResponse({
@@ -44,7 +30,7 @@ export class UserController {
 
   @ApiBearerAuth('jwt')
   @ApiHeader({
-    name: 'Authorization',
+    name: 'Bearer Authorization',
     description: 'eyJhGcioJ와 같은 accessToken',
   })
   @ApiResponse({
@@ -99,7 +85,7 @@ export class UserController {
 
   @ApiBearerAuth('jwt')
   @ApiHeader({
-    name: 'Authorization',
+    name: 'Bearer Authorization',
     description: 'eyJhGcioJ와 같은 accessToken',
   })
   @ApiResponse({
@@ -192,7 +178,7 @@ export class UserController {
 
   @ApiBearerAuth('jwt')
   @ApiHeader({
-    name: 'Authorization',
+    name: 'Bearer Authorization',
     description: 'eyJhGcioJ와 같은 accessToken',
   })
   @ApiResponse({
@@ -258,7 +244,7 @@ export class UserController {
 
   @ApiBearerAuth('jwt')
   @ApiHeader({
-    name: 'Authorization',
+    name: 'Bearer Authorization',
     description: 'eyJhGcioJ와 같은 accessToken',
   })
   @ApiResponse({

@@ -1,7 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from 'src/entities/Room';
 import { RoomChat } from 'src/entities/RoomChat';
@@ -14,6 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { Member } from 'src/entities/Member';
 import { v4 } from 'uuid';
 import { Player } from './friends-Mode.player';
+import { parseJWT } from 'src/commom/utility/parseJWT';
 
 @Injectable()
 export class FriendsService {
@@ -35,7 +33,7 @@ export class FriendsService {
     let userData: jwtParsed;
     let flag: boolean = true;
     try {
-      userData = jwt.verify(token, this.config.get('SECRET'));
+      userData = parseJWT(token, this.config.get('SECRET'));
     } catch (error) {
       //throw new UnauthorizedException(`unauthorized error`);
       flag = false;
@@ -100,7 +98,7 @@ export class FriendsService {
     let flag: boolean = true;
     let enterUser: Player;
     try {
-      userData = jwt.verify(token, this.config.get('SECRET'));
+      userData = parseJWT(token, this.config.get('SECRET'));
     } catch (error) {
       flag = false;
     } finally {
@@ -128,7 +126,11 @@ export class FriendsService {
           room.headCount += 1;
           await this.friendsRoomRepository.save(room);
           enterUser = new Player(
-            existUser.id, existUser.Nick, existUser.all, existUser.point, true,
+            existUser.id,
+            existUser.Nick,
+            existUser.all,
+            existUser.point,
+            true,
           );
         } else {
           flag = false;
@@ -150,9 +152,7 @@ export class FriendsService {
         member.room = room;
         member.all = imgCode;
         await this.memberRepository.save(member);
-        enterUser = new Player(
-          member.id, member.Nick, member.all, -1, false,
-        );
+        enterUser = new Player(member.id, member.Nick, member.all, -1, false);
       }
 
       const memberList = await this.memberRepository
@@ -185,7 +185,9 @@ export class FriendsService {
           new Player(user.id, user.Nick, user.all, user.point, true),
         );
       });
-      this.multiGatway.server.to(`/room-${room.status}-${room.roomid}`).emit('join', enterUser);
+      this.multiGatway.server
+        .to(`/room-${room.status}-${room.roomid}`)
+        .emit('join', enterUser);
       return { playerList, room };
     }
   }
@@ -247,7 +249,7 @@ export class FriendsService {
     let userData: jwtParsed;
     let flag: boolean = true;
     try {
-      userData = jwt.verify(token, this.config.get('SECRET'));
+      userData = parseJWT(token, this.config.get('SECRET'));
     } catch (error) {
       flag = false;
     } finally {
