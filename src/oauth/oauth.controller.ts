@@ -10,10 +10,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AccessToken } from './dto/oauth.dto';
 import { OauthService } from './oauth.service';
 import { config } from 'dotenv';
-import { RedirectInterceptor } from './functions/redirect';
 import { Response } from 'express';
 config();
 
@@ -34,6 +32,17 @@ export class OauthController {
     status: 404,
     schema: {
       example: { success: false, code: 404, data: 'unknown error' },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: '성공',
+    schema: {
+      example: {
+        accessToken: 'ourAccessToken',
+        email: 'email',
+        picture: 'picture url',
+      },
     },
   })
   @Get('/google/callback')
