@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import {
   WebSocketGateway,
   SubscribeMessage,
@@ -124,6 +125,8 @@ export class MultiGateway
       client.data.nickname,
       client.data.logined,
     );
+
+    Logger.log(room);
 
     console.log(
       `client ${client.data.nickname} leaved ${nspName}-${client.data.roomid}`,
