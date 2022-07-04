@@ -10,6 +10,7 @@ import {
   MessageBody,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { Room } from 'src/entities/Room';
 import { ConnectedUsers } from './connectedUsers';
 import { MultiService } from './multi.service';
 
@@ -45,7 +46,7 @@ export class MultiGateway
     @ConnectedSocket() client: Socket,
   ) {
     const newNamespace = client.nsp;
-    console.log('enter', newNamespace);
+    //console.log('enter', newNamespace);
     console.log('join', client.nsp.name, data.roomid);
 
     ConnectedUsers[client.nsp.name][client.id] = data.nickname;
@@ -59,9 +60,9 @@ export class MultiGateway
     client.data.logined = data.logined;
 
     client.join(`${client.nsp.name}-${data.roomid}`);
-    this.server.sockets.adapter.on('join-room', (room, id) => {
-      console.log(`socket ${id} has joined room ${room}`);
-    });
+    // this.server.sockets.adapter.on('join-room', (room, id) => {
+    //   console.log(`socket ${id} has joined room ${room}`);
+    // });
   }
 
   @SubscribeMessage('start')
@@ -112,7 +113,7 @@ export class MultiGateway
     client.emit('connected', client.nsp.name);
   }
 
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket) {
     console.log('Disconnected', client.nsp.name);
 
     const nspName = client.nsp.name;
@@ -120,17 +121,18 @@ export class MultiGateway
     delete ConnectedUsers[client.nsp.name][client.id];
 
     // 나간 사람 DB에서 데이터 수정(user) 또는 삭제(member)
-    const room: any = this.multiService.leaveRoom(
+    const { success, room } = await this.multiService.leaveRoom(
       client.data.roomid,
       client.data.nickname,
       client.data.logined,
     );
 
-    Logger.log(room);
-
     console.log(
       `client ${client.data.nickname} leaved ${nspName}-${client.data.roomid}`,
     );
+
+    console.log(success, room.host);
+
     nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
 
     this.server.to(`${nspName}-${client.data.roomid}`).emit('leave', {
