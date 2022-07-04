@@ -26,18 +26,17 @@ export class MultiService {
         where: { roomid: roomid },
       });
 
-      let player: any;
       let flag: boolean = false;
 
       if (logined) {
-        player = await this.userRepository.findOne({
+        const player = await this.userRepository.findOne({
           where: { SnsId: nick },
         });
         this.handlException(room, player);
         player.room = null;
         await this.userRepository.save(player);
 
-        if (player.SnsId === room.host) {
+        if (player.SnsId == room.host) {
           flag = true;
         }
 
@@ -49,13 +48,14 @@ export class MultiService {
         });
         this.handleRoomchat(roomChats, null, player);
       } else {
-        player = await this.memberRepository.findOne({
+        const player = await this.memberRepository.findOne({
           where: { Nick: nick },
         });
         this.handlException(room, player);
 
-        if (player.nick === room.host) {
+        if (player.Nick == room.host) {
           flag = true;
+          
         }
 
         const roomChats = await this.roomChatRepository.find({
@@ -67,7 +67,6 @@ export class MultiService {
         this.handleRoomchat(roomChats, player, null);
         await this.memberRepository.remove(player);
       }
-      room.headCount--;
 
       // 호스트가 나갔을 때
       if (flag) {
@@ -84,6 +83,7 @@ export class MultiService {
           room.host = new_host.Nick;
         }
       }
+      room.headCount--;
       await this.roomRepository.save(room);
       return { success: true, room };
     } catch (error) {
@@ -143,7 +143,7 @@ export class MultiService {
 
       return { success: true, mergeImg };
     } catch (error) {
-      return { success: false };
+      return { success: false, room: null };
     }
   }
 }
