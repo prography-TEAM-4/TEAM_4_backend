@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  NotAcceptableException,
-  NotFoundException,
-  RequestTimeoutException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/User';
 import { Repository } from 'typeorm';
@@ -12,8 +6,10 @@ import { CreateBookDto } from './dto/create-user.dto';
 import { ConfigService } from '@nestjs/config';
 import { jwtParsed } from './dto/userdata.dto';
 import { BookList } from 'src/entities/BookList';
-import { getRandomNickname } from './utilities/user.utility';
 import { parseJWT } from 'src/commom/utility/parseJWT';
+import { randomData } from './utilities/randomData';
+import { setBookList } from './utilities/setBookList';
+import { findUserById } from './utilities/findUser';
 
 @Injectable()
 export class UserService {
@@ -25,26 +21,20 @@ export class UserService {
   ) {}
   async create(createUserDto: CreateBookDto, token: any) {
     const userData: jwtParsed = parseJWT(token, this.config.get('SECRET'));
-    const existUserList = await this.usersRepository.find({
-      where: { SnsId: userData.id, Provider: userData.provider },
-    });
-    if (existUserList.length === 0) {
-      throw new NotAcceptableException('user is not found');
-    }
-    const existUser = existUserList[0];
-    const newBook: BookList = new BookList();
-    newBook.arm = createUserDto.arm;
-    newBook.body = createUserDto.body;
-    newBook.ear = createUserDto.ear;
-    newBook.face = createUserDto.face;
-    newBook.leg = createUserDto.leg;
-    newBook.tail = createUserDto.tail;
-    newBook.user = existUser;
+
+    const existUser = await findUserById(this.usersRepository, userData);
+
     try {
+      const newBook: BookList = setBookList(
+        new BookList(),
+        createUserDto,
+        existUser,
+      );
       newBook.save();
     } catch (error) {
-      throw new RequestTimeoutException('db error');
+      throw new NotFoundException('db error');
     }
+
     return {
       result: true,
     };
@@ -53,18 +43,13 @@ export class UserService {
   async findAll(token: any) {
     const userData: jwtParsed = parseJWT(token, this.config.get('SECRET'));
     try {
-      const user = await this.usersRepository.findOne({
-        where: { SnsId: userData.id, Provider: userData.provider },
-      });
-      if (!user) {
-        throw new UnauthorizedException(`unauthorized error`);
-      }
+      const user = await findUserById(this.usersRepository, userData);
       const result = await this.booklistRepository.findAndCount({
         where: { user: user },
       });
       return result;
     } catch (error) {
-      throw new NotFoundException('unknown error');
+      throw new NotFoundException('db error');
     }
   }
 
@@ -72,12 +57,7 @@ export class UserService {
     const userData: jwtParsed = parseJWT(token, this.config.get('SECRET'));
 
     try {
-      const user = await this.usersRepository.findOne({
-        where: { SnsId: userData.id, Provider: userData.provider },
-      });
-      if (!user) {
-        throw new UnauthorizedException(`unauthorized error`);
-      }
+      const user = await findUserById(this.usersRepository, userData);
       const filteredUser = Object.keys(user)
         .filter((key) => key === 'Nick' || key === 'point')
         .reduce((cur, key) => {
@@ -86,7 +66,7 @@ export class UserService {
 
       return filteredUser;
     } catch (error) {
-      throw new NotFoundException('unknown error');
+      throw new NotFoundException('db error');
     }
   }
 
@@ -95,37 +75,14 @@ export class UserService {
   }
 
   async randomNick() {
-    const ImgCode = Math.floor(Math.random() * 6) + 1;
-    const code = {
-      face: ImgCode,
-      arm: ImgCode,
-      body: ImgCode,
-      ear: ImgCode,
-      leg: ImgCode,
-      tail: ImgCode,
-      all: ImgCode,
-    };
-    const icons = {
-      arrow: Math.floor(Math.random() * 6) + 1,
-    };
-
-    return {
-      Nick: getRandomNickname(ImgCode),
-      code,
-      icons,
-    };
+    return randomData();
   }
 
   async patchUser(token: any, body: string) {
     const userData: jwtParsed = parseJWT(token, this.config.get('SECRET'));
 
     try {
-      const user = await this.usersRepository.findOne({
-        where: { SnsId: userData.id, Provider: userData.provider },
-      });
-      if (!user) {
-        throw new UnauthorizedException(`unauthorized error`);
-      }
+      const user = await findUserById(this.usersRepository, userData);
       user.Nick = body;
       await user.save();
       return {
@@ -133,7 +90,7 @@ export class UserService {
         Nick: body,
       };
     } catch (error) {
-      throw new NotFoundException('unknown error');
+      throw new NotFoundException('db error');
     }
   }
 }
