@@ -40,6 +40,7 @@ export class OauthController {
     return await this.oauthService.googleAccess(code);
   }
 
+  //todo : req 를 받아서, req가 로컬호스트인지, 아닌지를 보고 redirect url 을 처리하는 방법
   @ApiOperation({
     summary: `구글 로그인 페이지로 이동합니다 redirect_uri:${process.env.GOOGLE_REDIRECT}`,
   })

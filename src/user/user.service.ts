@@ -28,7 +28,6 @@ export class UserService {
     const existUserList = await this.usersRepository.find({
       where: { SnsId: userData.id, Provider: userData.provider },
     });
-    console.log(existUserList);
     if (existUserList.length === 0) {
       throw new NotAcceptableException('user is not found');
     }
