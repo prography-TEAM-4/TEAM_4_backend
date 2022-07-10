@@ -62,9 +62,9 @@ export class FriendsService {
     console.log('getFriendsRoom');
     // 없는 방이거나 6명 이상인 경우
     // 임시 테스트
-    // if (!room || room.headCount >= 6) {
-    //   throw new BadRequestException('Not Exist Room');
-    // }
+    if (!room || room.headCount >= 6) {
+      throw new BadRequestException('Not Exist Room');
+    }
 
     // 로그인을 하지 않은 유저
     // 이 부분도 추후 변경 필요. 중복 확인 설정 나중에
