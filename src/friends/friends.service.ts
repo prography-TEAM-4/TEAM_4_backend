@@ -29,62 +29,29 @@ export class FriendsService {
 
   // 방 만들기
   async createFriendsRoom(nick: string, token: any) {
-    let userData: jwtParsed;
-    let flag: boolean = true;
-    try {
-      userData = parseJWT(token, this.config.get('SECRET'));
-    } catch (error) {
-      //throw new UnauthorizedException(`unauthorized error`);
-      flag = false;
-    } finally {
-      if (flag) {
-        const existUser = await this.userRepository.findOne({
-          where: {
-            SnsId: userData.id,
-            Provider: userData.provider,
-          },
-        });
+    // 중복 닉네임 예외처리
+    const duplicate_check = await this.memberRepository.findOne({
+      where: { Nick: nick },
+    });
 
-        // 로그인 한 경우 가능
-        if (existUser) {
-          const roomid: string = v4();
-
-          const room = new Room();
-          room.roomid = roomid;
-          room.host = existUser.SnsId;
-          room.headCount = 0;
-          room.status = 'FRIENDS';
-          await this.friendsRoomRepository.save(room);
-          return room;
-        }
-      }
-      // 테스트용: 비로그인 시에도 가능하게끔
-      else {
-        // 중복 닉네임 예외처리
-        const duplicate_check = await this.memberRepository.findOne({
-          where: { Nick: nick },
-        });
-
-        if (duplicate_check) {
-          throw new BadRequestException('Duplicated Nickname');
-        }
-
-        const roomid: string = v4();
-
-        const room = new Room();
-        room.roomid = roomid;
-        room.host = nick;
-        room.headCount = 0;
-        room.status = 'FRIENDS';
-        await this.friendsRoomRepository.save(room);
-
-        // 바로 입장을 진행하기 때문에 member 생성은 방 입장 시 진행
-        // const member = new Member();
-        // member.Nick = nick;
-        // await this.memberRepository.save(member);
-        return room;
-      }
+    if (duplicate_check) {
+      throw new BadRequestException('Duplicated Nickname');
     }
+
+    const roomid: string = v4();
+
+    const room = new Room();
+    room.roomid = roomid;
+    room.host = nick;
+    room.headCount = 0;
+    room.status = 'FRIENDS';
+    await this.friendsRoomRepository.save(room);
+
+    // 바로 입장을 진행하기 때문에 member 생성은 방 입장 시 진행
+    // const member = new Member();
+    // member.Nick = nick;
+    // await this.memberRepository.save(member);
+    return room;
   }
   // 방 가져오기
   async getFriendsRoom(
@@ -189,53 +156,6 @@ export class FriendsService {
         .emit('join', enterUser);
       return { playerList, room };
     }
-  }
-
-  async removeFriendsRoom(roomid: string) {
-    try {
-      const destroyRoom = await this.friendsRoomRepository.findOne({
-        where: { roomid: roomid },
-      });
-
-      // chat 삭제
-      await this.friendsRoomChatRepository.delete({
-        room: destroyRoom,
-      });
-
-      // member 삭제
-      await this.memberRepository.delete({
-        room: destroyRoom,
-      });
-
-      // user roomid 값을 null로 변경
-      const users = await this.userRepository.find({
-        where: { room: destroyRoom },
-      });
-      users.forEach(async (user) => {
-        user.room = null;
-        user.all = null;
-        await this.userRepository.save(user);
-      });
-
-      // 방 삭제
-      await this.friendsRoomRepository.delete(destroyRoom);
-      return { result: 'success' };
-    } catch (error) {
-      return { result: 'fail' };
-    }
-  }
-
-  async getFriendsRoomChats(roomid: string) {
-    return this.friendsRoomChatRepository
-      .createQueryBuilder('roomChats')
-      .innerJoin('roomChats.room', 'room', 'room.roomid = :roomid', {
-        roomid,
-      })
-      .leftJoinAndSelect('roomChats.user', 'user')
-      .leftJoinAndSelect('roomChats.member', 'member')
-      .orderBy('roomChats.createdAt', 'DESC')
-      .take(10)
-      .getMany();
   }
 
   // 채팅 생성하기

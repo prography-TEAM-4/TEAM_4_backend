@@ -186,63 +186,6 @@ export class FriendsController {
     );
   }
 
-  @ApiParam({
-    name: 'roomid',
-    description: '방 코드',
-  })
-  @ApiResponse({
-    description: '친구방 채팅 가져오기 성공 (최근 10개의 채팅만 가져옴)',
-    status: 200,
-    schema: {
-      example: {
-        roomChats: [
-          [
-            {
-              id: 1,
-              content: 'hi',
-              createdAt: '2022-05-23T07:27:16.467Z',
-              user: null,
-              member: [
-                {
-                  id: '1',
-                  Nick: 'exampleMember',
-                  all: '2',
-                  createAt: '2022-05-23T07:09:54.678Z',
-                  deleteAt: null,
-                  updateAt: '2022-05-23T07:09:54.678Z',
-                },
-              ],
-            },
-            {
-              id: 2,
-              content: 'hello',
-              createdAt: '2022-05-23T07:27:20.467Z',
-              user: [
-                {
-                  id: '1',
-                  SnsId: 'user@example.com',
-                  Nick: 'exampleUser',
-                  Provider: 'examplePlatform',
-                  point: 0,
-                  all: '1',
-                  createAt: '2022-05-23T07:09:54.678Z',
-                  deleteAt: null,
-                  updateAt: '2022-05-23T07:09:54.678Z',
-                },
-              ],
-              member: null,
-            },
-          ],
-        ],
-      },
-    },
-  })
-  @ApiOperation({ summary: '친구방 채팅 가져오기' })
-  @Get(':roomid/chats')
-  async getFriendsRoomChats(@Param('roomid') roomid: string) {
-    return await this.friendsService.getFriendsRoomChats(roomid);
-  }
-
   @ApiHeader({
     name: 'Bearer Authorization',
     description: 'eyJhGcioJ와 같은 accessToken',
@@ -290,33 +233,5 @@ export class FriendsController {
       content,
       nick,
     );
-  }
-
-  @ApiParam({
-    name: 'roomid',
-    description: '삭제하려는 방 코드',
-  })
-  @ApiResponse({
-    description: '친구방 삭제 생성 성공',
-    status: 200,
-    schema: {
-      example: {
-        result: 'success',
-      },
-    },
-  })
-  @ApiResponse({
-    description: '친구방 삭제 생성 실패 (roomid 오류)',
-    status: 404,
-    schema: {
-      example: {
-        result: 'fail',
-      },
-    },
-  })
-  @ApiOperation({ summary: '친구방 삭제하기' })
-  @Delete(':roomid')
-  async removeFriendsRoomChats(@Param('roomid') roomid: string) {
-    return await this.friendsService.removeFriendsRoom(roomid);
   }
 }

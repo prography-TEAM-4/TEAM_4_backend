@@ -60,9 +60,6 @@ export class MultiGateway
     client.data.logined = data.logined;
 
     client.join(`${client.nsp.name}-${data.roomid}`);
-    // this.server.sockets.adapter.on('join-room', (room, id) => {
-    //   console.log(`socket ${id} has joined room ${room}`);
-    // });
   }
 
   @SubscribeMessage('start')
@@ -130,8 +127,6 @@ export class MultiGateway
     console.log(
       `client ${client.data.nickname} leaved ${nspName}-${client.data.roomid}`,
     );
-
-    console.log(success, room.host);
 
     nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
 

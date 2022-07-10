@@ -6,7 +6,6 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OauthModule } from './oauth/oauth.module';
 import { UserModule } from './user/user.module';
-import { ModeModule } from './mode/mode.module';
 import { RandomModule } from './random/random.module';
 import { FriendsModule } from './friends/friends.module';
 import * as ormconfig from '../ormconfig';
@@ -17,7 +16,6 @@ import * as ormconfig from '../ormconfig';
     UserModule,
     TypeOrmModule.forRoot(ormconfig),
     OauthModule,
-    ModeModule,
     RandomModule,
     FriendsModule,
   ],
