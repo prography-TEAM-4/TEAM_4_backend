@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Headers,
-} from '@nestjs/common';
+import { Body, Controller, Param, Post, Headers } from '@nestjs/common';
 import {
   ApiBody,
   ApiHeader,
@@ -87,11 +79,8 @@ export class FriendsController {
   })
   @ApiOperation({ summary: '친구방 만들기' })
   @Post('')
-  async createFriendsRoom(
-    @Headers('Authorization') token: any,
-    @Body('nick') nick: string,
-  ) {
-    return await this.friendsService.createFriendsRoom(nick, token);
+  async createFriendsRoom(@Body('nick') nick: string) {
+    return await this.friendsService.createFriendsRoom(nick);
   }
 
   @ApiParam({
@@ -174,16 +163,10 @@ export class FriendsController {
   @Post(':roomid')
   async getFriendsRoom(
     @Param('roomid') roomid: string,
-    @Headers('Authorization') token: any,
     @Body('nick') nick: string,
     @Body('imgCode') imgCode: string,
   ) {
-    return await this.friendsService.getFriendsRoom(
-      roomid,
-      token,
-      nick,
-      imgCode,
-    );
+    return await this.friendsService.getFriendsRoom(roomid, nick, imgCode);
   }
 
   @ApiHeader({
@@ -222,13 +205,11 @@ export class FriendsController {
   @ApiOperation({ summary: '친구방 채팅 생성하기' })
   @Post(':roomid/chats')
   async createFriendsRoomChats(
-    @Headers('Authorization') token: any,
     @Param('roomid') roomid: string,
     @Body('content') content: string,
     @Body('memberId') nick: string,
   ) {
     return await this.friendsService.creatFriendsRoomChats(
-      token,
       roomid,
       content,
       nick,

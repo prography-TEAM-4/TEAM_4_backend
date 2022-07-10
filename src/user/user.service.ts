@@ -75,6 +75,7 @@ export class UserService {
   }
 
   async randomNick() {
+    console.log('random');
     return randomData();
   }
 

@@ -45,6 +45,7 @@ export class MultiGateway
     @MessageBody() data: { nickname: string; logined: boolean; roomid: string },
     @ConnectedSocket() client: Socket,
   ) {
+    console.log('handleEnter');
     const newNamespace = client.nsp;
     //console.log('enter', newNamespace);
     console.log('join', client.nsp.name, data.roomid);
@@ -64,6 +65,7 @@ export class MultiGateway
 
   @SubscribeMessage('start')
   handleStart(@ConnectedSocket() client: Socket) {
+    console.log('handleStart');
     const pomo = {
       mode: 'pomo',
       cycle: 1,
@@ -101,6 +103,7 @@ export class MultiGateway
   }
 
   handleConnection(client: Socket) {
+    console.log('handleConnection');
     console.log('connected', client.nsp.name);
 
     if (!ConnectedUsers[client.nsp.name]) {
@@ -111,6 +114,7 @@ export class MultiGateway
   }
 
   async handleDisconnect(client: Socket) {
+    console.log('handleDisconnection');
     console.log('Disconnected', client.nsp.name);
 
     const nspName = client.nsp.name;
