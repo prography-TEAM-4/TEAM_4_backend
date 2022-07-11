@@ -29,6 +29,9 @@ export class Room extends BaseEntity {
   @Column()
   status: string;
 
+  @Column()
+  type: string;
+
   @OneToMany((type) => User, (user) => user.room)
   User: User[];
 

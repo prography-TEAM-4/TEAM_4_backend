@@ -10,7 +10,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { BookList } from './BookList';
 import { Room } from './Room';
 import { RoomChat } from './RoomChat';
 
@@ -25,6 +24,9 @@ export class Member extends BaseEntity {
 
   @Column({ nullable: true })
   all: string;
+
+  @Column()
+  socketId: string;
 
   @CreateDateColumn()
   createdAt: Date;
