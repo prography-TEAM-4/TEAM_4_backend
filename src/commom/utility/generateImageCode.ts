@@ -27,7 +27,28 @@ export function generateImageCode(userList: number[]): string {
   
   // 종류가 네개 이상일 때
   else{
+    // key: 이미지코드, value: 사용했는가
+    const map: Map<number, boolean> = new Map<number, boolean>();
+
+    // 초기화
+    kindOfImg.forEach((img) => {
+      map.set(img, false);
+    });
+    
+    // 0, 1, 3번째 사용 반영
+    map.set(userList[0], true);
+    map.set(userList[1], true);
+    map.set(userList[3], true);
+
     const picks: Set<number> = new Set<number>();
+
+    // 조합에 사용하지 않은 캐릭터를 미리 picks에 인덱스로 넣어줌
+    for(let idx=0 ; idx<kindOfImg.length ; idx++){
+      const key: number = kindOfImg[idx];
+      if(map.has(key) && !map.get(key)){
+        picks.add(idx);
+      }
+    }
 
     // 중복되지 않게 n개의 종류 중 3개 pick
     while(picks.size != 3){
