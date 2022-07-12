@@ -4,7 +4,7 @@ export function generateImageCode(userList: number[]): string {
   const kindOfImg: number[] = Array.from(set);
 
   // 한명이거나 한종류일 때
-  if(len==1 || set.size==1){
+  if(set.size==1){
     return `${userList[0]}_${userList[0]}_${userList[0]}_${userList[0]}_${userList[0]}_${userList[0]}`;  
   }
 
@@ -16,7 +16,7 @@ export function generateImageCode(userList: number[]): string {
   userList.sort(() => Math.random() - 0.5);
 
   // 종류가 두개일 땐 랜덤
-  if(len==2 || set.size==2){
+  if(set.size==2){
     return `${userList[0]}_${userList[1]}_${userList[2]}_${userList[3]}_${userList[4]}_${userList[5]}`;
   }
 
