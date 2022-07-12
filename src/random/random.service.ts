@@ -41,7 +41,7 @@ export class RandomService {
     room.roomid = roomid;
     room.host = 'RANDOM';
     room.headCount = 0;
-    room.status = 'RANDOM';
+    room.type = 'RANDOM';
     await this.randomRoomRepository.save(room);
 
     return { result: 'create success', room };
@@ -50,7 +50,7 @@ export class RandomService {
   async findRoom() {
     const room = await this.randomRoomRepository.findOne({
       where: {
-        status: 'RANDOM',
+        type: 'RANDOM',
         headCount: Not(6),
       },
     });

@@ -44,7 +44,7 @@ export class FriendsService {
     room.roomid = roomid;
     room.host = nick;
     room.headCount = 0;
-    room.status = 'FRIENDS';
+    room.type = 'FRIENDS';
     await this.friendsRoomRepository.save(room);
 
     // 바로 입장을 진행하기 때문에 member 생성은 방 입장 시 진행
@@ -115,7 +115,7 @@ export class FriendsService {
     });
 
     this.multiGatway.server
-      .to(`/room-${room.status}-${room.roomid}`)
+      .to(`/room-${room.type}-${room.roomid}`)
       .emit('join', enterUser);
     return { playerList, room };
   }
@@ -156,7 +156,7 @@ export class FriendsService {
 
     // socket.io로 해당 방 사용자에게 전송
     this.multiGatway.server
-      .to(`/room-${chatWithUser.room.status}-${chatWithUser.room.roomid}`)
+      .to(`/room-${chatWithUser.room.type}-${chatWithUser.room.roomid}`)
       .emit('message', chatWithUser);
 
     return { result: 'success' };
