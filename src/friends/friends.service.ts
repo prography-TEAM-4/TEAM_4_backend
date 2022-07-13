@@ -24,7 +24,8 @@ export class FriendsService {
     const room = new Room();
     room.roomid = roomid;
     room.headCount = 0;
-    room.status = 'FRIENDS';
+    room.status = 'created';
+    room.type = 'FRIENDS';
     try {
       await this.friendsRoomRepository.save(room);
     } catch (e) {
