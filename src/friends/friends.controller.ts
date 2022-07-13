@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Headers } from '@nestjs/common';
+import { Body, Controller, Param, Post, Headers, Get } from '@nestjs/common';
 import {
   ApiBody,
   ApiHeader,
@@ -78,9 +78,9 @@ export class FriendsController {
     },
   })
   @ApiOperation({ summary: '친구방 만들기' })
-  @Post('')
-  async createFriendsRoom(@Body('nick') nick: string) {
-    return await this.friendsService.createFriendsRoom(nick);
+  @Get('')
+  async createFriendsRoom() {
+    return await this.friendsService.createFriendsRoom();
   }
 
   @ApiParam({

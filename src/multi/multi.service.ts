@@ -36,10 +36,6 @@ export class MultiService {
         player.room = null;
         await this.userRepository.save(player);
 
-        if (player.SnsId == room.host) {
-          flag = true;
-        }
-
         const roomChats = await this.roomChatRepository.find({
           where: {
             user: player,
@@ -53,11 +49,6 @@ export class MultiService {
         });
         this.handlException(room, player);
 
-        if (player.Nick == room.host) {
-          flag = true;
-          
-        }
-
         const roomChats = await this.roomChatRepository.find({
           where: {
             member: player,
@@ -69,20 +60,7 @@ export class MultiService {
       }
 
       // 호스트가 나갔을 때
-      if (flag) {
-        const new_host = await this.userRepository.findOne({
-          where: { room: room },
-        });
 
-        if (new_host) {
-          room.host = new_host.SnsId;
-        } else {
-          const new_host = await this.memberRepository.findOne({
-            where: { room: room },
-          });
-          room.host = new_host.Nick;
-        }
-      }
       room.headCount--;
       await this.roomRepository.save(room);
       return { success: true, room };

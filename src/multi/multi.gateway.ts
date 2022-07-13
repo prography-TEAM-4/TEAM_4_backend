@@ -104,7 +104,6 @@ export class MultiGateway
 
   handleConnection(client: Socket) {
     console.log('handleConnection');
-    console.log('connected', client.nsp.name);
 
     if (!ConnectedUsers[client.nsp.name]) {
       ConnectedUsers[client.nsp.name] = {};
