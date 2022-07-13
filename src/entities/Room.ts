@@ -23,8 +23,11 @@ export class Room extends BaseEntity {
   @Column()
   headCount: number;
 
-  @Column()
+  @Column({ default: 'created', nullable: true })
   status: string;
+
+  @Column()
+  type: string;
 
   @OneToMany((type) => User, (user) => user.room)
   User: User[];
