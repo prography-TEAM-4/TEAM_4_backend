@@ -25,7 +25,7 @@ export class Member extends BaseEntity {
   @Column({ nullable: true })
   all: string;
 
-  @Column()
+  @Column({ nullable: true })
   socketId: string;
 
   @CreateDateColumn()

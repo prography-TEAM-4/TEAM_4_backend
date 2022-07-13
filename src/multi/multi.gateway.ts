@@ -11,12 +11,11 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Room } from 'src/entities/Room';
-import { ConnectedUsers } from './connectedUsers';
 import { MultiService } from './multi.service';
 
 //@WebSocketGateway({ namespace: /\/room-.+/ })
 @WebSocketGateway({
-  namespace: /\/room-.+/,
+  namespace: /.*/,
   transports: ['polling', 'websocket'],
   cors: {
     origin: '*',
@@ -50,10 +49,9 @@ export class MultiGateway
     //console.log('enter', newNamespace);
     console.log('join', client.nsp.name, data.roomid);
 
-    ConnectedUsers[client.nsp.name][client.id] = data.nickname;
     newNamespace.emit(
       'ConnectedUsers',
-      Object.values(ConnectedUsers[client.nsp.name]),
+      // Object.values(ConnectedUsers[client.nsp.name]),
     );
 
     client.data.roomid = data.roomid;
@@ -102,14 +100,7 @@ export class MultiGateway
     }
   }
 
-  handleConnection(client: Socket) {
-    console.log('handleConnection');
-    if (!ConnectedUsers[client.nsp.name]) {
-      ConnectedUsers[client.nsp.name] = {};
-    }
-    console.log(ConnectedUsers);
-    client.emit('connected', client.nsp.name);
-  }
+  handleConnection(client: Socket) {}
 
   async handleDisconnect(client: Socket) {
     console.log('handleDisconnection');
@@ -117,7 +108,7 @@ export class MultiGateway
 
     const nspName = client.nsp.name;
     const nsp = client.nsp;
-    delete ConnectedUsers[client.nsp.name][client.id];
+    // delete ConnectedUsers[client.nsp.name][client.id];
 
     // 나간 사람 DB에서 데이터 수정(user) 또는 삭제(member)
     const { success, room } = await this.multiService.leaveRoom(
@@ -130,7 +121,7 @@ export class MultiGateway
       `client ${client.data.nickname} leaved ${nspName}-${client.data.roomid}`,
     );
 
-    nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
+    // nsp.emit('connectedList', Object.values(ConnectedUsers[client.nsp.name]));
 
     this.server.to(`${nspName}-${client.data.roomid}`).emit('leave', {
       room,

@@ -39,9 +39,9 @@ export class RandomService {
 
     const room = new Room();
     room.roomid = roomid;
-    room.host = 'RANDOM';
     room.headCount = 0;
     room.type = 'RANDOM';
+
     await this.randomRoomRepository.save(room);
 
     return { result: 'create success', room };

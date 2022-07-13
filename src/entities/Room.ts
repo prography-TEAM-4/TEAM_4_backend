@@ -21,12 +21,9 @@ export class Room extends BaseEntity {
   roomid: string;
 
   @Column()
-  host: string;
-
-  @Column()
   headCount: number;
 
-  @Column()
+  @Column({ default: 'created', nullable: true })
   status: string;
 
   @Column()
