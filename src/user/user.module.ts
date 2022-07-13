@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { HttpModule, Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,6 +9,6 @@ import { BookList } from 'src/entities/BookList';
 @Module({
   controllers: [UserController],
   providers: [UserService],
-  imports: [TypeOrmModule.forFeature([User, BookList]), ConfigService],
+  imports: [TypeOrmModule.forFeature([User, BookList]), ConfigService,HttpModule],
 })
 export class UserModule {}

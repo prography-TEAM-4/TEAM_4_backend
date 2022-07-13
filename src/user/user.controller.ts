@@ -284,4 +284,9 @@ export class UserController {
   ) {
     return await this.userService.patchUser(token, body);
   }
+
+  @Get('/randomImage')
+  async getRandomImage(@Body() userList: number[]) {
+    return await this.userService.getRandomImage(userList);
+  }
 }
