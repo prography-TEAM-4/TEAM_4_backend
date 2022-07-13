@@ -15,7 +15,7 @@ import { MultiService } from './multi.service';
 
 //@WebSocketGateway({ namespace: /\/room-.+/ })
 @WebSocketGateway({
-  namespace: /\/room-.+/,
+  namespace: /.*/,
   transports: ['polling', 'websocket'],
   cors: {
     origin: '*',
@@ -100,15 +100,7 @@ export class MultiGateway
     }
   }
 
-  handleConnection(client: Socket) {
-    console.log('handleConnection');
-
-    // if (!ConnectedUsers[client.nsp.name]) {
-    //   ConnectedUsers[client.nsp.name] = {};
-    // }
-    // console.log(ConnectedUsers);
-    client.emit('connected', client.nsp.name);
-  }
+  handleConnection(client: Socket) {}
 
   async handleDisconnect(client: Socket) {
     console.log('handleDisconnection');
