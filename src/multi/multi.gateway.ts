@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, UseFilters } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   WebSocketGateway,
@@ -15,6 +15,7 @@ import { Member } from 'src/entities/Member';
 import { Room } from 'src/entities/Room';
 import { Repository } from 'typeorm';
 import { MultiService } from './multi.service';
+import { AllExceptionsFilter } from './utilities/AllExceptionsFilter';
 import { checkCount } from './utilities/findRoomAndCheck';
 
 //@WebSocketGateway({ namespace: /\/room-.+/ })
@@ -42,12 +43,11 @@ export class MultiGateway
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { Nick: string; all: string },
   ) {
-    console.log(client.id);
     const member = new Member();
     member.Nick = data.Nick;
     member.all = data.all;
     member.socketId = client.id;
-    await checkCount(client.nsp.name, this.roomRepository);
+    await checkCount(client, this.roomRepository);
     await this.memberRepository.save(member);
   }
 
@@ -121,10 +121,12 @@ export class MultiGateway
   // }
 
   async handleConnection(client: Socket) {
+    console.log('handleConnection');
     const room = await this.roomRepository.findOne({
       where: { roomid: client.nsp.name },
     });
     if (!room) {
+      client.emit('error', '없는 방입니다');
       client.disconnect(true);
     }
   }
@@ -152,5 +154,11 @@ export class MultiGateway
     //     logined: client.data.logined,
     //   },
     // });
+    // @UseFilters(new AllExceptionsFilter())
+    // @SubscribeMessage('events')
+    // testing(client,data : any){
+    //   const event='events';
+    //   return {event,data};
+    // }
   }
 }
