@@ -108,7 +108,7 @@ export class OauthController {
   kakaoPage() {}
 
   @ApiOperation({
-    summary: `로그인 성공시 ${process.env.KAKAO_CALLBACK}?accessToken=토큰값 으로 redirect`,
+    summary: `로그인 성공시 ${process.env.KAKAO_CALLBACK}?accessToken=토큰값&email=이메일 으로 redirect`,
   })
   @Get('/kakao/callback')
   async kakaoLogin(@Query('code') kakaoCode: any, @Res() res: Response) {
