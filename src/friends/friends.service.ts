@@ -22,7 +22,7 @@ export class FriendsService {
     const roomid: string = v4();
 
     const room = new Room();
-    room.roomid = roomid;
+    room.roomid = '/' + roomid;
     room.headCount = 0;
     room.status = 'created';
     room.type = 'FRIENDS';
