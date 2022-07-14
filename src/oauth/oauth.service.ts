@@ -100,7 +100,7 @@ export class OauthService {
     const userData: TFindOrCreate = {
       Nick: 'testing',
       picture: '',
-      email: '',
+      email: data.email,
       Provider: 'kakao',
       SnsId: data.id,
     };
@@ -115,7 +115,9 @@ export class OauthService {
     return res
       .status(302)
       .redirect(
-        `${this.config.get('KAKAO_CALLBACK')}?accessToken=${ourAccessToken}`,
+        `${this.config.get(
+          'KAKAO_CALLBACK',
+        )}?accessToken=${ourAccessToken}&email=${data.email}`,
       );
   }
 }

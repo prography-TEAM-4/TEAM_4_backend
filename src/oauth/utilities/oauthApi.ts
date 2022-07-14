@@ -68,7 +68,12 @@ export const getKakaoData = async (
         },
       },
     );
-    return result.data;
+    const test = await axios.get('https://kapi.kakao.com/v2/user/me', {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+    return { id: result.data.id, email: test.data.kakao_account.email };
   } catch (e) {
     throw new UnauthorizedException(`unauthorized error`);
   }
