@@ -11,7 +11,7 @@ export const checkCount = async (
     where: { roomid: client.nsp.name },
   });
   if (currentRoom.headCount === 6) {
-    client.emit('error', '방이 가득 찼습니다');
+    client.emit('customError', '방이 가득 찼습니다');
     client.disconnect(true);
   }
   currentRoom.headCount++;
