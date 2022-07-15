@@ -21,12 +21,18 @@ export class RoomChat extends BaseEntity {
   @CreateDateColumn()
   createdAt: Date;
 
+  @Column()
+  clientSocketId: string;
+
+  @Column()
+  roomSocketId: string;
+
   @ManyToOne((type) => User, (user) => user.id)
   user: User;
 
-  @ManyToOne((type) => Member, (member) => member.id)
-  member: Member;
+  // @ManyToOne((type) => Member, (member) => member.id)
+  // member: Member;
 
-  @ManyToOne((type) => Room, (room) => room.id)
-  room: Room;
+  // @ManyToOne((type) => Room, (room) => room.id)
+  // room: Room;
 }

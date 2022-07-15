@@ -28,6 +28,9 @@ export class Member extends BaseEntity {
   @Column({ nullable: true })
   socketId: string;
 
+  @Column({ nullable: true })
+  roomSocketId: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -40,6 +43,6 @@ export class Member extends BaseEntity {
   @ManyToOne((type) => Room, (room) => room.id)
   room: Room;
 
-  @OneToMany((type) => RoomChat, (roomchat) => roomchat.member)
-  roomchat: RoomChat[];
+  // @OneToMany((type) => RoomChat, (roomchat) => roomchat.member)
+  // roomchat: RoomChat[];
 }

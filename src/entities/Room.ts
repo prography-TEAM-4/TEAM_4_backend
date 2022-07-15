@@ -35,6 +35,6 @@ export class Room extends BaseEntity {
   @OneToMany((type) => Member, (member) => member.room)
   member: Member[];
 
-  @OneToMany((type) => RoomChat, (roomchat) => roomchat.room)
-  roomchat: RoomChat[];
+  // @OneToMany((type) => RoomChat, (roomchat) => roomchat.room)
+  // roomchat: RoomChat[];
 }
