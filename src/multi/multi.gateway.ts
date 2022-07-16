@@ -65,47 +65,10 @@ export class MultiGateway
     );
   }
 
-  // @SubscribeMessage('test')
-  // async handleTest(@MessageBody() data: { Nick: string; all: string }) {}
-
   afterInit(server: Server) {
     console.log('WebSockets Init');
   }
 
-  // 이벤트 발생 시
-  // @SubscribeMessage('enter')
-  // handleEnter(
-  //   @MessageBody() data: { nickname: string; logined: boolean; roomid: string },
-  //   @ConnectedSocket() client: Socket,
-  // ) {
-  //   console.log('handleEnter');
-  //   const newNamespace = client.nsp;
-  //   //console.log('enter', newNamespace);
-  //   console.log('join', client.nsp.name, data.roomid);
-
-  //   newNamespace.emit(
-  //     'ConnectedUsers',
-  //     // Object.values(ConnectedUsers[client.nsp.name]),
-  //   );
-
-  //   client.data.roomid = data.roomid;
-  //   client.data.nickname = data.nickname;
-  //   client.data.logined = data.logined;
-
-  //   client.join(`${client.nsp.name}-${data.roomid}`);
-  // }
-
-  // @SubscribeMessage('start')
-  // handleStart(@ConnectedSocket() client: Socket) {
-  //   console.log('handleStart');
-  //   const pomo = {
-  //     mode: 'pomo',
-  //     cycle: 1,
-  //   };
-  //   this.server
-  //     .to(`${client.nsp.name}-${client.data.roomid}`)
-  //     .emit('start', pomo);
-  // }
   @SubscribeMessage('message')
   async handleMessage(
     @MessageBody() chatBody: any,
@@ -125,32 +88,6 @@ export class MultiGateway
     message.roomSocketId = client.nsp.name;
     await this.roomChatRepository.save(message);
   }
-  // @SubscribeMessage('change')
-  // handleMode(
-  //   @MessageBody() pomo: { mode: string; cycle: number },
-  //   @ConnectedSocket() client: Socket,
-  // ) {
-  //   if (pomo.mode === 'pomo') {
-  //     if (pomo.cycle == 4) {
-  //       const mergeImg: any = this.multiService.finishPomo(client.data.roomid);
-
-  //       this.server
-  //         .to(`${client.nsp.name}-${client.data.roomid}`)
-  //         .emit('finish', mergeImg);
-  //     } else {
-  //       pomo.mode = 'break';
-  //       this.server
-  //         .to(`${client.nsp.name}-${client.data.roomid}`)
-  //         .emit('change', pomo);
-  //     }
-  //   } else if (pomo.mode === 'break') {
-  //     pomo.mode = 'pomo';
-  //     pomo.cycle++;
-  //     this.server
-  //       .to(`${client.nsp.name}-${client.data.roomid}`)
-  //       .emit('change', pomo);
-  //   }
-  // }
 
   async handleConnection(client: Socket) {
     console.log('handleConnection');
