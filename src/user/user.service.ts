@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpService, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/User';
 import { Repository } from 'typeorm';
@@ -10,6 +10,7 @@ import { parseJWT } from 'src/commom/utility/parseJWT';
 import { randomData } from './utilities/randomData';
 import { setBookList } from './utilities/setBookList';
 import { findUserById } from './utilities/findUser';
+import { generateImageCode } from 'src/commom/utility/generateImageCode';
 
 @Injectable()
 export class UserService {
@@ -18,6 +19,7 @@ export class UserService {
     @InjectRepository(BookList)
     private booklistRepository: Repository<BookList>,
     private readonly config: ConfigService,
+    private readonly httpService: HttpService,
   ) {}
   async create(createUserDto: CreateBookDto, token: any) {
     const userData: jwtParsed = parseJWT(token, this.config.get('SECRET'));
@@ -93,5 +95,24 @@ export class UserService {
     } catch (error) {
       throw new NotFoundException('db error');
     }
+  }
+
+  async getRandomImage(userList: number[]) {
+    const randomCode: string = generateImageCode(userList);
+
+    try{
+      await this.fetchCachingData(randomCode);
+      return {
+        link: `https://d2x93sz3rudpa1.cloudfront.net/character/custom/${randomCode}.png`
+      }
+    } catch (error) {
+      throw new NotFoundException('not exist image');
+    }
+  }
+
+  private async fetchCachingData(imgCode: string) {
+    return this.httpService.axiosRef.get(
+      `https://d2x93sz3rudpa1.cloudfront.net/character/custom/${imgCode}.png`,
+    );
   }
 }
