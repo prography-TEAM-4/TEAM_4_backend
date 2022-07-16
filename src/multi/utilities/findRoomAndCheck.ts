@@ -13,10 +13,12 @@ export const checkCount = async (
   if (currentRoom.headCount === 6) {
     client.emit('customError', '방이 가득 찼습니다');
     client.disconnect(true);
+    throw new Error('full member');
   }
   if (currentRoom.status === 'starting') {
     client.emit('customError', '이미 공부가 시작되었습니다.');
     client.disconnect(true);
+    throw new Error('started');
   }
   currentRoom.headCount++;
   await roomRepository.save(currentRoom);
