@@ -46,6 +46,7 @@ export class MultiGateway
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { Nick: string; all: string },
   ) {
+    console.log('handle init');
     const member = new Member();
     const now = new Date();
     member.Nick = data.Nick;
@@ -67,6 +68,23 @@ export class MultiGateway
 
   afterInit(server: Server) {
     console.log('WebSockets Init');
+    setInterval(() => {
+      console.log('time');
+      server.emit('time');
+    }, 1000);
+  }
+
+  @SubscribeMessage('start')
+  async handleStart(@ConnectedSocket() client: Socket) {
+    console.log('handleStart');
+    const room = await this.roomRepository.findOne({
+      where: { roomid: client.nsp.name },
+    });
+    if (room.status === 'created') {
+      room.status = 'starting';
+      await this.roomRepository.save(room);
+      this.server.to(client.nsp.name).emit('start');
+    }
   }
 
   @SubscribeMessage('message')
