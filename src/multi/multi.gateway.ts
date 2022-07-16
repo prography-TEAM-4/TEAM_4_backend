@@ -18,6 +18,7 @@ import { Repository } from 'typeorm';
 // import { MultiService } from './multi.service';
 import { AllExceptionsFilter } from './utilities/AllExceptionsFilter';
 import { checkCount } from './utilities/findRoomAndCheck';
+import { removeMember } from './utilities/findRoomAndRemove';
 
 //@WebSocketGateway({ namespace: /\/room-.+/ })
 @WebSocketGateway({
@@ -163,7 +164,13 @@ export class MultiGateway
   }
 
   async handleDisconnect(client: Socket) {
-    console.log('handleDisconnection');
-    await checkCount(client, this.roomRepository);
+    await removeMember(client, this.roomRepository, this.memberRepository);
+    const memberArray = await this.memberRepository.find({
+      where: { roomSocketId: client.nsp.name },
+    });
+    this.server.to(client.nsp.name).emit(
+      'leave',
+      memberArray.map((value) => ({ Nick: value.Nick, all: value.all })),
+    );
   }
 }
