@@ -99,15 +99,18 @@ export class UserService {
 
   async getRandomImage(userList: number[]) {
     const randomCode: string = generateImageCode(userList);
-
-    try{
-      await this.fetchCachingData(randomCode);
-      return {
-        link: `https://d2x93sz3rudpa1.cloudfront.net/character/custom/${randomCode}.png`
-      }
-    } catch (error) {
-      throw new NotFoundException('not exist image');
-    }
+    // console.log(randomCode);
+    // try {
+    //   await this.fetchCachingData(randomCode);
+    //   return {
+    //     link: `https://d2x93sz3rudpa1.cloudfront.net/character/custom/${randomCode}.png`,
+    //   };
+    // } catch (error) {
+    //   throw new NotFoundException('not exist image');
+    // }
+    return {
+      link: `https://d2x93sz3rudpa1.cloudfront.net/character/custom/${randomCode}.png`,
+    };
   }
 
   private async fetchCachingData(imgCode: string) {

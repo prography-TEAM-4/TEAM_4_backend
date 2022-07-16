@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Headers, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Headers,
+  Put,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateBookDto } from './dto/create-user.dto';
 import {
@@ -6,6 +14,7 @@ import {
   ApiBody,
   ApiHeader,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -285,8 +294,17 @@ export class UserController {
     return await this.userService.patchUser(token, body);
   }
 
-  @Get('/randomImage')
-  async getRandomImage(@Body() userList: number[]) {
+  @ApiOperation({ summary: '랜덤한 이미지 가져오기' })
+  @ApiParam({
+    name: 'userList',
+    description: '1~6까지의 숫자 배열',
+  })
+  @Post('/randomImage')
+  async getRandomImage(@Body('userList') userList: number[]) {
+    if (!userList) {
+      throw new NotFoundException('타입을 확인해주세요');
+    }
+    console.log(userList);
     return await this.userService.getRandomImage(userList);
   }
 }

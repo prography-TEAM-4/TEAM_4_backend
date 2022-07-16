@@ -69,7 +69,6 @@ export class MultiGateway
   afterInit(server: Server) {
     console.log('WebSockets Init');
     setInterval(() => {
-      console.log('time');
       server.emit('time');
     }, 1000);
   }
