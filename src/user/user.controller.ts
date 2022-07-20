@@ -301,9 +301,11 @@ export class UserController {
   })
   @Post('/randomImage')
   async getRandomImage(@Body('userList') userList: number[]) {
-    if (!userList) {
+    if (!Array.isArray(userList) || userList.length === 0) {
+      console.log('userError');
       throw new NotFoundException('타입을 확인해주세요');
     }
+    console.log('userList');
     console.log(userList);
     return await this.userService.getRandomImage(userList);
   }
